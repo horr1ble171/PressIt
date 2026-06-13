@@ -30,8 +30,8 @@ public partial class MainForm : MaterialForm
     public MainForm()
     {
         Text = "PressIt";
-        ClientSize = new Size(600, 500);
-        MinimumSize = new Size(560, 480);
+        ClientSize = new Size(640, 560);
+        MinimumSize = new Size(600, 520);
         FormBorderStyle = FormBorderStyle.Sizable;
         MaximizeBox = true;
         StartPosition = FormStartPosition.CenterScreen;

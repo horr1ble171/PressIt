@@ -31,77 +31,132 @@ public class SimpleHoldControl : UserControl
 
     private void InitializeControls()
     {
+        var mainLayout = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 6,
+            Padding = new Padding(16, 12, 16, 12)
+        };
+        mainLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        // Row 0: метка "Выберите клавишу"
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        // Row 1: ComboBox клавиши
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        // Row 2: длительность (NumericUpDown + "секунд")
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        // Row 3: чекбокс "Бесконечно"
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        // Row 4: кнопки Старт / Стоп (фиксированная высота)
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 64));
+        // Row 5: countdown
+        mainLayout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+
+        // --- Строка 0: Заголовок ---
         var topLabel = new Label
         {
             Text = "Выберите клавишу (из списка или нажмите):",
-            Location = new Point(30, 30),
-            AutoSize = true
+            AutoSize = true,
+            Anchor = AnchorStyles.Left,
+            Margin = new Padding(0, 0, 0, 4)
         };
+        mainLayout.Controls.Add(topLabel, 0, 0);
 
+        // --- Строка 1: ComboBox ---
         _keyCombo = new MaterialComboBox
         {
-            Location = new Point(30, 55),
-            Size = new Size(200, 30),
-            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+            Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top,
             DropDownStyle = ComboBoxStyle.DropDownList,
-            AutoResize = false
+            AutoResize = false,
+            Margin = new Padding(0, 0, 0, 10)
         };
         _keyCombo.Items.AddRange(new[] { "W", "A", "S", "D", "X", "Space", "Ctrl", "Shift", "Alt", "Enter", "Q", "E", "R", "F", "Z", "C", "V", "Tab", "Esc", "Up", "Down", "Left", "Right", "1", "2", "3", "4", "5", "0" });
         _keyCombo.SelectedIndex = 0;
+        mainLayout.Controls.Add(_keyCombo, 0, 1);
 
+        // --- Строка 2: Длительность ---
+        var durationFlow = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            AutoSize = true,
+            WrapContents = false,
+            Margin = new Padding(0, 0, 0, 4)
+        };
         _durationUpDown = new NumericUpDown
         {
-            Location = new Point(30, 120),
-            Size = new Size(110, 26),
-            Minimum = 1,
-            Maximum = 9999,
-            Value = 10,
-            TextAlign = HorizontalAlignment.Center
+            Minimum = 1, Maximum = 9999, Value = 10,
+            TextAlign = HorizontalAlignment.Center,
+            Width = 80,
+            Margin = new Padding(0, 0, 6, 0)
         };
-
-        var secLabel = new Label
+        durationFlow.Controls.Add(_durationUpDown);
+        durationFlow.Controls.Add(new Label
         {
             Text = "секунд",
-            Location = new Point(145, 122),
-            AutoSize = true
-        };
+            AutoSize = true,
+            TextAlign = ContentAlignment.MiddleLeft,
+            Margin = new Padding(0, 4, 0, 0)
+        });
+        mainLayout.Controls.Add(durationFlow, 0, 2);
 
+        // --- Строка 3: Чекбокс ---
         _infiniteCheck = new MaterialCheckbox
         {
             Text = "Бесконечно (до Стоп)",
-            Location = new Point(30, 160),
-            Size = new Size(240, 30)
+            AutoSize = true,
+            Anchor = AnchorStyles.Left,
+            Margin = new Padding(0, 0, 0, 10)
         };
         _infiniteCheck.CheckedChanged += (_, _) => _durationUpDown.Enabled = !_infiniteCheck.Checked;
+        mainLayout.Controls.Add(_infiniteCheck, 0, 3);
+
+        // --- Строка 4: Кнопки Старт / Стоп ---
+        var btnLayout = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 2,
+            RowCount = 1,
+            Margin = new Padding(0, 2, 0, 8)
+        };
+        btnLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+        btnLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
 
         _startBtn = new MaterialButton
         {
             Text = "Старт [F6]",
-            Location = new Point(30, 195),
-            Size = new Size(220, 55),
-            Font = new Font(Font.FontFamily, 14, FontStyle.Bold)
+            Dock = DockStyle.Fill,
+            Font = new Font(Font.FontFamily, 13, FontStyle.Bold),
+            Margin = new Padding(0, 0, 4, 0)
         };
         _startBtn.Click += StartHold;
+        btnLayout.Controls.Add(_startBtn, 0, 0);
 
         _stopBtn = new MaterialButton
         {
             Text = "Стоп [F7]",
-            Location = new Point(270, 195),
-            Size = new Size(220, 55),
-            Font = new Font(Font.FontFamily, 14, FontStyle.Bold),
-            Enabled = false
+            Dock = DockStyle.Fill,
+            Font = new Font(Font.FontFamily, 13, FontStyle.Bold),
+            Enabled = false,
+            Margin = new Padding(4, 0, 0, 0)
         };
+        _stopBtn.Click += StopHold;
+        btnLayout.Controls.Add(_stopBtn, 1, 0);
+        mainLayout.Controls.Add(btnLayout, 0, 4);
 
+        // --- Строка 5: Countdown ---
         _countdownLabel = new Label
         {
             Text = "",
-            Location = new Point(30, 280),
+            AutoSize = false,
+            Anchor = AnchorStyles.Left | AnchorStyles.Right,
+            Height = 40,
             Font = new Font(Font.FontFamily, 18, FontStyle.Bold),
             TextAlign = ContentAlignment.MiddleCenter,
             ForeColor = Color.DarkBlue
         };
+        mainLayout.Controls.Add(_countdownLabel, 0, 5);
 
-        Controls.AddRange(new Control[] { topLabel, _keyCombo, _durationUpDown, secLabel, _infiniteCheck, _startBtn, _stopBtn, _countdownLabel });
+        Controls.Add(mainLayout);
 
         var tooltip = new ToolTip();
         tooltip.SetToolTip(_startBtn, "Глобальная горячая клавиша: F6");
@@ -129,7 +184,6 @@ public class SimpleHoldControl : UserControl
         if (_selectedKey == null) return;
 
         _isHolding = true;
-
         _updateStatus($"Удержание {keyName}");
 
         if (!_infiniteCheck.Checked)
@@ -154,10 +208,7 @@ public class SimpleHoldControl : UserControl
         });
     }
 
-    private void StopHold(object? sender, EventArgs e)
-    {
-        Stop();
-    }
+    private void StopHold(object? sender, EventArgs e) => Stop();
 
     public void Stop()
     {
@@ -173,7 +224,6 @@ public class SimpleHoldControl : UserControl
         _startBtn.Enabled = true;
         _stopBtn.Enabled = false;
         _keyCombo.Enabled = true;
-
         _updateStatus("Готово");
     }
 
@@ -187,10 +237,6 @@ public class SimpleHoldControl : UserControl
     {
         _remainingSeconds--;
         _countdownLabel.Text = $"{_remainingSeconds}с";
-
-        if (_remainingSeconds <= 0)
-        {
-            Stop();
-        }
+        if (_remainingSeconds <= 0) Stop();
     }
 }
