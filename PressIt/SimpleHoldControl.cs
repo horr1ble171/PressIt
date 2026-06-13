@@ -35,7 +35,7 @@ public class SimpleHoldControl : UserControl
     {
         var topLabel = new Label
         {
-            Text = "Select key (from list or press any key):",
+            Text = "Выберите клавишу (из списка или нажмите):",
             Location = new Point(12, 10),
             Size = new Size(300, 20)
         };
@@ -60,14 +60,14 @@ public class SimpleHoldControl : UserControl
 
         var secLabel = new Label
         {
-            Text = "seconds",
+            Text = "секунд",
             Location = new Point(100, 82),
             Size = new Size(50, 20)
         };
 
         _infiniteCheck = new CheckBox
         {
-            Text = "Infinite (until Stop)",
+            Text = "Бесконечно (до Stop)",
             Location = new Point(12, 105),
             Size = new Size(180, 25)
         };
@@ -75,7 +75,7 @@ public class SimpleHoldControl : UserControl
 
         _startBtn = new Button
         {
-            Text = "Start",
+            Text = "Старт",
             Location = new Point(12, 140),
             Size = new Size(100, 35),
             BackColor = Color.LightGreen,
@@ -86,7 +86,7 @@ public class SimpleHoldControl : UserControl
 
         _stopBtn = new Button
         {
-            Text = "Stop",
+            Text = "Стоп",
             Location = new Point(120, 140),
             Size = new Size(100, 35),
             BackColor = Color.LightCoral,
@@ -125,12 +125,12 @@ public class SimpleHoldControl : UserControl
 
         _isHolding = true;
 
-        _updateStatus($"Holding {keyName}");
+        _updateStatus($"Удержание {keyName}");
 
         if (!_infiniteCheck.Checked)
         {
             _remainingSeconds = (int)_durationUpDown.Value;
-            _countdownLabel.Text = $"{_remainingSeconds}s";
+            _countdownLabel.Text = $"{_remainingSeconds}с";
             _countdownTimer.Start();
         }
         else
@@ -171,7 +171,7 @@ public class SimpleHoldControl : UserControl
         _stopBtn.Enabled = false;
         _keyCombo.Enabled = true;
 
-        _updateStatus("Ready");
+        _updateStatus("Готово");
 
         this.FindForm()!.WindowState = FormWindowState.Normal;
     }
@@ -185,7 +185,7 @@ public class SimpleHoldControl : UserControl
     private void CountdownTick(object? sender, EventArgs e)
     {
         _remainingSeconds--;
-        _countdownLabel.Text = $"{_remainingSeconds}s";
+        _countdownLabel.Text = $"{_remainingSeconds}с";
 
         if (_remainingSeconds <= 0)
         {

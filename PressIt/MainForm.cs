@@ -38,8 +38,8 @@ public partial class MainForm : Form
         _tabControl = new TabControl { Dock = DockStyle.Fill };
         Controls.Add(_tabControl);
 
-        _tabSimple = new TabPage("Simple Hold");
-        _tabScenario = new TabPage("Scenario");
+        _tabSimple = new TabPage("Простое удержание");
+        _tabScenario = new TabPage("Сценарий");
 
         _tabControl.TabPages.Add(_tabSimple);
         _tabControl.TabPages.Add(_tabScenario);
@@ -65,7 +65,7 @@ public partial class MainForm : Form
 
         _emergencyStop = new Button
         {
-            Text = "EMERGENCY STOP",
+            Text = "АВАРИЙНАЯ ОСТАНОВКА",
             BackColor = Color.Red,
             ForeColor = Color.White,
             Font = new Font(Font.FontFamily, 10, FontStyle.Bold),
@@ -80,7 +80,7 @@ public partial class MainForm : Form
         Controls.Add(bottomPanel);
 
         _statusStrip = new StatusStrip();
-        _statusLabel = new ToolStripStatusLabel("Ready")
+        _statusLabel = new ToolStripStatusLabel("Готово")
         {
             Spring = true,
             TextAlign = ContentAlignment.MiddleLeft
@@ -100,7 +100,7 @@ public partial class MainForm : Form
         _keyboard.ReleaseAll();
         _simpleHoldControl?.Stop();
         _scenarioControl?.Stop();
-        UpdateStatus("Emergency stop - all keys released");
+        UpdateStatus("Аварийная остановка — все клавиши отпущены");
     }
 
     protected override void OnFormClosing(FormClosingEventArgs e)

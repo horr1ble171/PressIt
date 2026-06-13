@@ -35,7 +35,7 @@ public class ScenarioControl : UserControl
     {
         var listLabel = new Label
         {
-            Text = "Actions:",
+            Text = "Действия:",
             Location = new Point(12, 8),
             Size = new Size(200, 15)
         };
@@ -49,23 +49,23 @@ public class ScenarioControl : UserControl
 
         var addGroup = new GroupBox
         {
-            Text = "Add Action",
+            Text = "Добавить действие",
             Location = new Point(12, 170),
             Size = new Size(370, 90)
         };
 
-        var delayLabel = new Label { Text = "Delay (ms):", Location = new Point(8, 20), Size = new Size(65, 15) };
+        var delayLabel = new Label { Text = "Задержка (мс):", Location = new Point(8, 20), Size = new Size(85, 15) };
         _delayUpDown = new NumericUpDown { Location = new Point(75, 18), Size = new Size(65, 22), Minimum = 0, Maximum = 60000, Value = 1000 };
 
-        var typeLabel = new Label { Text = "Type:", Location = new Point(8, 45), Size = new Size(35, 15) };
+        var typeLabel = new Label { Text = "Тип:", Location = new Point(8, 45), Size = new Size(35, 15) };
         _actionTypeCombo = new ComboBox
         {
             Location = new Point(45, 43), Size = new Size(95, 22), DropDownStyle = ComboBoxStyle.DropDownList
         };
-        _actionTypeCombo.Items.AddRange(Enum.GetNames<ActionType>());
+        _actionTypeCombo.Items.AddRange(new[] { ScenarioAction.GetActionTypeDisplayName(ActionType.Press), ScenarioAction.GetActionTypeDisplayName(ActionType.Release), ScenarioAction.GetActionTypeDisplayName(ActionType.Tap) });
         _actionTypeCombo.SelectedIndex = 0;
 
-        var keyLabel = new Label { Text = "Key:", Location = new Point(150, 45), Size = new Size(30, 15) };
+        var keyLabel = new Label { Text = "Клавиша:", Location = new Point(150, 45), Size = new Size(55, 15) };
         _keyCombo = new ComboBox
         {
             Location = new Point(180, 43), Size = new Size(80, 22), DropDownStyle = ComboBoxStyle.DropDownList
@@ -73,17 +73,17 @@ public class ScenarioControl : UserControl
         _keyCombo.Items.AddRange(new[] { "W", "A", "S", "D", "X", "Space", "Ctrl", "Shift", "Alt", "Enter", "Q", "E", "R", "F", "Z", "C", "V", "Tab", "Esc", "Up", "Down", "Left", "Right", "1", "2", "3", "4", "5", "0" });
         _keyCombo.SelectedIndex = 0;
 
-        _addBtn = new Button { Text = "Add", Location = new Point(270, 20), Size = new Size(85, 25) };
+        _addBtn = new Button { Text = "Добавить", Location = new Point(270, 20), Size = new Size(85, 25) };
         _addBtn.Click += AddAction;
 
-        _removeBtn = new Button { Text = "Remove", Location = new Point(270, 50), Size = new Size(85, 25) };
+        _removeBtn = new Button { Text = "Удалить", Location = new Point(270, 50), Size = new Size(85, 25) };
         _removeBtn.Click += RemoveAction;
 
         addGroup.Controls.AddRange(new Control[] { delayLabel, _delayUpDown, typeLabel, _actionTypeCombo, keyLabel, _keyCombo, _addBtn, _removeBtn });
 
         _startBtn = new Button
         {
-            Text = "Start Scenario",
+            Text = "Запустить",
             Location = new Point(12, 270),
             Size = new Size(120, 35),
             BackColor = Color.LightGreen,
@@ -94,7 +94,7 @@ public class ScenarioControl : UserControl
 
         _stopBtn = new Button
         {
-            Text = "Stop Scenario",
+            Text = "Остановить",
             Location = new Point(140, 270),
             Size = new Size(120, 35),
             BackColor = Color.LightCoral,
@@ -104,10 +104,10 @@ public class ScenarioControl : UserControl
         _stopBtn.FlatAppearance.BorderSize = 0;
         _stopBtn.Click += (_, _) => _runner.Stop();
 
-        var saveBtn = new Button { Text = "Save", Location = new Point(275, 270), Size = new Size(50, 35) };
+        var saveBtn = new Button { Text = "Сохр.", Location = new Point(275, 270), Size = new Size(50, 35) };
         saveBtn.Click += SaveScenario;
 
-        var loadBtn = new Button { Text = "Load", Location = new Point(330, 270), Size = new Size(50, 35) };
+        var loadBtn = new Button { Text = "Загр.", Location = new Point(330, 270), Size = new Size(50, 35) };
         loadBtn.Click += LoadScenario;
 
         Controls.AddRange(new Control[] { listLabel, _actionListBox, addGroup, _startBtn, _stopBtn, saveBtn, loadBtn });
@@ -118,7 +118,7 @@ public class ScenarioControl : UserControl
         var action = new ScenarioAction
         {
             DelayMs = (int)_delayUpDown.Value,
-            ActionType = Enum.Parse<ActionType>(_actionTypeCombo.SelectedItem?.ToString() ?? "Tap"),
+            ActionType = ScenarioAction.ParseActionType(_actionTypeCombo.SelectedItem?.ToString() ?? "Нажать"),
             Key = _keyCombo.SelectedItem?.ToString() ?? "Space"
         };
         _actions.Add(action);
@@ -134,7 +134,7 @@ public class ScenarioControl : UserControl
     {
         if (_actions.Count == 0)
         {
-            MessageBox.Show("Add at least one action to the scenario.", "No actions", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            MessageBox.Show("Добавьте хотя бы одно действие в сценарий.", "Нет действий", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
 

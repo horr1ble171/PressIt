@@ -41,30 +41,30 @@ public class ScenarioRunner
                 {
                     case ActionType.Press:
                         _keyboard.HoldKey(key);
-                        StatusChanged?.Invoke($"Holding {action.Key}");
+                        StatusChanged?.Invoke($"Зажата {action.Key}");
                         break;
                     case ActionType.Release:
                         _keyboard.ReleaseKey(key);
-                        StatusChanged?.Invoke($"Released {action.Key}");
+                        StatusChanged?.Invoke($"Отпущена {action.Key}");
                         break;
                     case ActionType.Tap:
                         _keyboard.TapKey(key);
-                        StatusChanged?.Invoke($"Tapped {action.Key}");
+                        StatusChanged?.Invoke($"Нажата {action.Key}");
                         break;
                 }
             }
 
-            StatusChanged?.Invoke("Scenario completed");
+            StatusChanged?.Invoke("Сценарий завершён");
         }
         catch (OperationCanceledException)
         {
             _keyboard.ReleaseAll();
-            StatusChanged?.Invoke("Scenario stopped");
+            StatusChanged?.Invoke("Сценарий остановлен");
         }
         catch (Exception ex)
         {
             _keyboard.ReleaseAll();
-            StatusChanged?.Invoke($"Error: {ex.Message}");
+            StatusChanged?.Invoke($"Ошибка: {ex.Message}");
         }
         finally
         {
