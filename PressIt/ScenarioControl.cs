@@ -87,22 +87,22 @@ public class ScenarioControl : UserControl
         var addGroup = new GroupBox
         {
             Text = "Новое действие",
-            Dock = DockStyle.Fill,
-            AutoSize = true
+            Height = 75,
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
         };
 
         var groupInner = new TableLayoutPanel
         {
             Dock = DockStyle.Fill,
             ColumnCount = 1,
-            RowCount = 2,
-            AutoSize = true
+            RowCount = 2
         };
+        groupInner.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
+        groupInner.RowStyles.Add(new RowStyle(SizeType.Percent, 50));
 
         var delayFlow = new FlowLayoutPanel
         {
             Dock = DockStyle.Fill,
-            AutoSize = true,
             WrapContents = true
         };
         delayFlow.Controls.Add(new Label { Text = "Задержка:", TextAlign = ContentAlignment.MiddleLeft });
@@ -122,7 +122,6 @@ public class ScenarioControl : UserControl
         var actionFlow = new FlowLayoutPanel
         {
             Dock = DockStyle.Fill,
-            AutoSize = true,
             WrapContents = true
         };
         actionFlow.Controls.Add(new Label { Text = "Тип:", TextAlign = ContentAlignment.MiddleLeft });
@@ -156,17 +155,16 @@ public class ScenarioControl : UserControl
 
         var bottomPanel = new TableLayoutPanel
         {
-            Dock = DockStyle.Fill, ColumnCount = 5, RowCount = 1, MinimumSize = new Size(0, 55)
+            Dock = DockStyle.Fill, ColumnCount = 4, RowCount = 1
         };
-        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 160));
-        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 160));
-        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
+        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
         bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 80));
         bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 80));
 
         _startBtn = new Button
         {
-            Text = "Запустить", Dock = DockStyle.Fill, BackColor = Color.LightGreen, FlatStyle = FlatStyle.Flat
+            Text = "Запустить", Dock = DockStyle.Fill, BackColor = Color.LightGreen, FlatStyle = FlatStyle.Flat, MinimumSize = new Size(140, 0)
         };
         _startBtn.FlatAppearance.BorderSize = 0;
         _startBtn.Click += StartScenario;
@@ -174,7 +172,7 @@ public class ScenarioControl : UserControl
 
         _stopBtn = new Button
         {
-            Text = "Остановить", Dock = DockStyle.Fill, BackColor = Color.LightCoral, FlatStyle = FlatStyle.Flat, Enabled = false
+            Text = "Остановить", Dock = DockStyle.Fill, BackColor = Color.LightCoral, FlatStyle = FlatStyle.Flat, Enabled = false, MinimumSize = new Size(140, 0)
         };
         _stopBtn.FlatAppearance.BorderSize = 0;
         _stopBtn.Click += (_, _) =>
@@ -189,11 +187,11 @@ public class ScenarioControl : UserControl
 
         var saveBtn = new Button { Text = "Сохр.", Dock = DockStyle.Fill };
         saveBtn.Click += SaveScenario;
-        bottomPanel.Controls.Add(saveBtn, 3, 0);
+        bottomPanel.Controls.Add(saveBtn, 2, 0);
 
         var loadBtn = new Button { Text = "Загр.", Dock = DockStyle.Fill };
         loadBtn.Click += LoadScenario;
-        bottomPanel.Controls.Add(loadBtn, 4, 0);
+        bottomPanel.Controls.Add(loadBtn, 3, 0);
 
         layout.Controls.Add(bottomPanel, 0, 4);
         Controls.Add(layout);
