@@ -1,3 +1,4 @@
+using PressIt;
 using PressIt.Models;
 using WindowsInput.Native;
 
@@ -43,7 +44,11 @@ public class ScenarioRunner
 
                     token.ThrowIfCancellationRequested();
 
-                    var key = (VirtualKeyCode)Enum.Parse(typeof(VirtualKeyCode), action.Key);
+                    if (!KeyHelper.Map.TryGetValue(action.Key, out var key))
+                    {
+                        StatusChanged?.Invoke($"Неизвестная клавиша: {action.Key}");
+                        return;
+                    }
 
                     switch (action.ActionType)
                     {
