@@ -9,8 +9,8 @@ internal static class AppResources
         {
             if (_logo == null)
             {
-                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "logo.png");
-                _logo = Image.FromFile(path);
+                using var stream = typeof(AppResources).Assembly.GetManifestResourceStream("PressIt.Resources.logo.png");
+                _logo = Image.FromStream(stream!);
             }
             return _logo;
         }

@@ -25,7 +25,7 @@ public partial class MainForm : MaterialForm
 
     private SimpleHoldControl _simpleHoldControl;
     private ScenarioControl _scenarioControl;
-    private Bitmap _logoBmp;
+    private Bitmap _logoBmp = null!;
 
     public MainForm()
     {
