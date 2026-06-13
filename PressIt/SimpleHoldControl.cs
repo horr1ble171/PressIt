@@ -34,13 +34,14 @@ public class SimpleHoldControl : UserControl
         {
             Text = "Выберите клавишу (из списка или нажмите):",
             Location = new Point(30, 30),
-            Size = new Size(350, 20)
+            AutoSize = true
         };
 
         _keyCombo = new ComboBox
         {
             Location = new Point(30, 55),
             Size = new Size(200, 25),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
             DropDownStyle = ComboBoxStyle.DropDownList
         };
         _keyCombo.Items.AddRange(new[] { "W", "A", "S", "D", "X", "Space", "Ctrl", "Shift", "Alt", "Enter", "Q", "E", "R", "F", "Z", "C", "V", "Tab", "Esc", "Up", "Down", "Left", "Right", "1", "2", "3", "4", "5", "0" });
@@ -59,7 +60,7 @@ public class SimpleHoldControl : UserControl
         {
             Text = "секунд",
             Location = new Point(115, 102),
-            Size = new Size(60, 20)
+            AutoSize = true
         };
 
         _infiniteCheck = new CheckBox
@@ -100,6 +101,7 @@ public class SimpleHoldControl : UserControl
             Text = "",
             Location = new Point(30, 260),
             Size = new Size(460, 40),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
             Font = new Font(Font.FontFamily, 18, FontStyle.Bold),
             TextAlign = ContentAlignment.MiddleCenter,
             ForeColor = Color.DarkBlue

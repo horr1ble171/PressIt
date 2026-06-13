@@ -37,13 +37,14 @@ public class ScenarioControl : UserControl
         {
             Text = "Действия:",
             Location = new Point(15, 10),
-            Size = new Size(200, 15)
+            AutoSize = true
         };
 
         _actionListBox = new ListBox
         {
             Location = new Point(15, 28),
             Size = new Size(530, 185),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
             DataSource = _actions
         };
 
@@ -51,13 +52,14 @@ public class ScenarioControl : UserControl
         {
             Text = "Добавить действие",
             Location = new Point(15, 225),
-            Size = new Size(530, 110)
+            Size = new Size(530, 110),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
         };
 
-        var delayLabel = new Label { Text = "Задержка (мс):", Location = new Point(10, 25), Size = new Size(85, 15) };
+        var delayLabel = new Label { Text = "Задержка (мс):", Location = new Point(10, 25), AutoSize = true };
         _delayUpDown = new NumericUpDown { Location = new Point(100, 23), Size = new Size(70, 22), Minimum = 0, Maximum = 60000, Value = 1000 };
 
-        var typeLabel = new Label { Text = "Тип:", Location = new Point(10, 55), Size = new Size(30, 15) };
+        var typeLabel = new Label { Text = "Тип:", Location = new Point(10, 55), AutoSize = true };
         _actionTypeCombo = new ComboBox
         {
             Location = new Point(45, 53), Size = new Size(110, 22), DropDownStyle = ComboBoxStyle.DropDownList
@@ -65,7 +67,7 @@ public class ScenarioControl : UserControl
         _actionTypeCombo.Items.AddRange(new[] { ScenarioAction.GetActionTypeDisplayName(ActionType.Press), ScenarioAction.GetActionTypeDisplayName(ActionType.Release), ScenarioAction.GetActionTypeDisplayName(ActionType.Tap) });
         _actionTypeCombo.SelectedIndex = 0;
 
-        var keyLabel = new Label { Text = "Клавиша:", Location = new Point(170, 55), Size = new Size(55, 15) };
+        var keyLabel = new Label { Text = "Клавиша:", Location = new Point(170, 55), AutoSize = true };
         _keyCombo = new ComboBox
         {
             Location = new Point(230, 53), Size = new Size(90, 22), DropDownStyle = ComboBoxStyle.DropDownList
@@ -73,10 +75,10 @@ public class ScenarioControl : UserControl
         _keyCombo.Items.AddRange(new[] { "W", "A", "S", "D", "X", "Space", "Ctrl", "Shift", "Alt", "Enter", "Q", "E", "R", "F", "Z", "C", "V", "Tab", "Esc", "Up", "Down", "Left", "Right", "1", "2", "3", "4", "5", "0" });
         _keyCombo.SelectedIndex = 0;
 
-        _addBtn = new Button { Text = "Добавить", Location = new Point(380, 22), Size = new Size(135, 28) };
+        _addBtn = new Button { Text = "Добавить", Location = new Point(380, 22), Size = new Size(135, 28), Anchor = AnchorStyles.Top | AnchorStyles.Right };
         _addBtn.Click += AddAction;
 
-        _removeBtn = new Button { Text = "Удалить", Location = new Point(380, 55), Size = new Size(135, 28) };
+        _removeBtn = new Button { Text = "Удалить", Location = new Point(380, 55), Size = new Size(135, 28), Anchor = AnchorStyles.Top | AnchorStyles.Right };
         _removeBtn.Click += RemoveAction;
 
         addGroup.Controls.AddRange(new Control[] { delayLabel, _delayUpDown, typeLabel, _actionTypeCombo, keyLabel, _keyCombo, _addBtn, _removeBtn });
@@ -86,6 +88,7 @@ public class ScenarioControl : UserControl
             Text = "Запустить",
             Location = new Point(15, 350),
             Size = new Size(180, 50),
+            Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
             BackColor = Color.LightGreen,
             FlatStyle = FlatStyle.Flat,
             Font = new Font(Font.FontFamily, 12, FontStyle.Bold)
@@ -98,6 +101,7 @@ public class ScenarioControl : UserControl
             Text = "Остановить",
             Location = new Point(205, 350),
             Size = new Size(180, 50),
+            Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
             BackColor = Color.LightCoral,
             FlatStyle = FlatStyle.Flat,
             Font = new Font(Font.FontFamily, 12, FontStyle.Bold),
@@ -106,10 +110,10 @@ public class ScenarioControl : UserControl
         _stopBtn.FlatAppearance.BorderSize = 0;
         _stopBtn.Click += (_, _) => _runner.Stop();
 
-        var saveBtn = new Button { Text = "Сохр.", Location = new Point(400, 350), Size = new Size(65, 50) };
+        var saveBtn = new Button { Text = "Сохр.", Location = new Point(400, 350), Size = new Size(65, 50), Anchor = AnchorStyles.Bottom | AnchorStyles.Right };
         saveBtn.Click += SaveScenario;
 
-        var loadBtn = new Button { Text = "Загр.", Location = new Point(470, 350), Size = new Size(65, 50) };
+        var loadBtn = new Button { Text = "Загр.", Location = new Point(470, 350), Size = new Size(65, 50), Anchor = AnchorStyles.Bottom | AnchorStyles.Right };
         loadBtn.Click += LoadScenario;
 
         Controls.AddRange(new Control[] { listLabel, _actionListBox, addGroup, _startBtn, _stopBtn, saveBtn, loadBtn });
