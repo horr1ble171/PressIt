@@ -228,6 +228,7 @@ public class ScenarioControl : UserControl
         _stopBtn.Enabled = true;
 
         this.FindForm()!.WindowState = FormWindowState.Minimized;
+        await Task.Delay(200);
 
         var list = _actions.ToList();
         await _runner.RunAsync(list, loopCount);
@@ -237,11 +238,33 @@ public class ScenarioControl : UserControl
         _stopBtn.Enabled = false;
     }
 
+    public void TryStop()
+    {
+        if (!_runner.IsRunning) return;
+        _runner.Stop();
+        _startBtn.Enabled = true;
+        _stopBtn.Enabled = false;
+        this.FindForm()!.WindowState = FormWindowState.Normal;
+    }
+
+    public void TryStart()
+    {
+        if (_runner.IsRunning) return;
+        if (_actions.Count == 0)
+        {
+            _updateStatus("Нет действий в сценарии");
+            return;
+        }
+        StartScenario(null, EventArgs.Empty);
+    }
+
     public void Stop()
     {
         _runner.Stop();
         _startBtn.Enabled = true;
         _stopBtn.Enabled = false;
+        if (this.FindForm() is { } form)
+            form.WindowState = FormWindowState.Normal;
     }
 
     private void SaveScenario(object? sender, EventArgs e)

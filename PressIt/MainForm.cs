@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using PressIt.Services;
 using WindowsInput.Native;
 
@@ -5,6 +6,16 @@ namespace PressIt;
 
 public partial class MainForm : Form
 {
+    private const int WM_HOTKEY = 0x0312;
+    private const int HOTKEY_ID_START = 1;
+    private const int HOTKEY_ID_STOP = 2;
+
+    [DllImport("user32.dll")]
+    private static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vk);
+
+    [DllImport("user32.dll")]
+    private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
     private readonly KeyboardService _keyboard = new();
     private readonly ScenarioRunner _runner;
 
@@ -33,6 +44,9 @@ public partial class MainForm : Form
         _runner.StatusChanged += msg => BeginInvoke(() => _statusLabel.Text = msg);
 
         InitializeControls();
+
+        RegisterHotKey(Handle, HOTKEY_ID_START, 0, (int)Keys.F6);
+        RegisterHotKey(Handle, HOTKEY_ID_STOP, 0, (int)Keys.F7);
     }
 
     private void InitializeControls()
@@ -82,8 +96,28 @@ public partial class MainForm : Form
         UpdateStatus("Аварийная остановка — все клавиши отпущены");
     }
 
+    protected override void WndProc(ref Message m)
+    {
+        if (m.Msg == WM_HOTKEY)
+        {
+            var id = m.WParam.ToInt32();
+            if (id == HOTKEY_ID_START)
+            {
+                _tabControl.SelectedTab = _tabScenario;
+                _scenarioControl?.TryStart();
+            }
+            else if (id == HOTKEY_ID_STOP)
+            {
+                EmergencyStop();
+            }
+        }
+        base.WndProc(ref m);
+    }
+
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
+        UnregisterHotKey(Handle, HOTKEY_ID_START);
+        UnregisterHotKey(Handle, HOTKEY_ID_STOP);
         _keyboard.ReleaseAll();
         base.OnFormClosing(e);
     }
