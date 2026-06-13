@@ -81,18 +81,19 @@ public class ScenarioControl : UserControl
             _removeBtn.Enabled = _actionListBox.SelectedItem != null;
         layout.Controls.Add(_actionListBox, 0, 1);
 
-        var addGroup = new GroupBox { Text = "Новое действие", Dock = DockStyle.Fill };
-
-        var addInner = new TableLayoutPanel
+        var addGroup = new GroupBox
         {
-            Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 2, Padding = new Padding(8, 20, 8, 4)
+            Text = "Новое действие",
+            Height = 75,
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
         };
-        addInner.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-        addInner.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        addInner.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-        addInner.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
-        var delayFlow = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoSize = true };
+        var delayFlow = new FlowLayoutPanel
+        {
+            Location = new Point(8, 20),
+            Size = new Size(100, 24),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+        };
         delayFlow.Controls.Add(new Label { Text = "Задержка:", TextAlign = ContentAlignment.MiddleLeft });
         _hoursUpDown = new NumericUpDown { Minimum = 0, Maximum = 999, Width = 50, Value = 0 };
         delayFlow.Controls.Add(_hoursUpDown);
@@ -105,10 +106,14 @@ public class ScenarioControl : UserControl
         delayFlow.Controls.Add(new Label { Text = ".", TextAlign = ContentAlignment.MiddleCenter });
         _msUpDown = new NumericUpDown { Minimum = 0, Maximum = 999, Width = 60, Value = 0 };
         delayFlow.Controls.Add(_msUpDown);
-        addInner.Controls.Add(delayFlow, 0, 0);
-        addInner.SetColumnSpan(delayFlow, 2);
+        addGroup.Controls.Add(delayFlow);
 
-        var actionFlow = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoSize = true };
+        var actionFlow = new FlowLayoutPanel
+        {
+            Location = new Point(8, 47),
+            Size = new Size(100, 24),
+            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+        };
         actionFlow.Controls.Add(new Label { Text = "Тип:", TextAlign = ContentAlignment.MiddleLeft });
         _actionTypeCombo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 105 };
         _actionTypeCombo.Items.AddRange(new[] { ScenarioAction.GetActionTypeDisplayName(ActionType.Press), ScenarioAction.GetActionTypeDisplayName(ActionType.Release), ScenarioAction.GetActionTypeDisplayName(ActionType.Tap) });
@@ -125,9 +130,7 @@ public class ScenarioControl : UserControl
         _addBtn.Click += AddAction;
         actionFlow.Controls.Add(_addBtn);
 
-        addInner.Controls.Add(actionFlow, 0, 1);
-        addInner.SetColumnSpan(actionFlow, 2);
-        addGroup.Controls.Add(addInner);
+        addGroup.Controls.Add(actionFlow);
         layout.Controls.Add(addGroup, 0, 2);
 
         var bottomPanel = new TableLayoutPanel

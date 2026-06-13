@@ -26,7 +26,8 @@ public partial class MainForm : Form
         MaximizeBox = true;
         StartPosition = FormStartPosition.CenterScreen;
 
-        Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+        using var logoBmp = new Bitmap(AppResources.Logo, 32, 32);
+        Icon = Icon.FromHandle(logoBmp.GetHicon());
 
         _runner = new ScenarioRunner(_keyboard);
         _runner.StatusChanged += msg => BeginInvoke(() => _statusLabel.Text = msg);
