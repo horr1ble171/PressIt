@@ -87,15 +87,23 @@ public class ScenarioControl : UserControl
         var addGroup = new GroupBox
         {
             Text = "Новое действие",
-            Height = 75,
-            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+            Dock = DockStyle.Fill,
+            AutoSize = true
+        };
+
+        var groupInner = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 2,
+            AutoSize = true
         };
 
         var delayFlow = new FlowLayoutPanel
         {
-            Location = new Point(8, 20),
-            Size = new Size(500, 24),
-            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+            Dock = DockStyle.Fill,
+            AutoSize = true,
+            WrapContents = true
         };
         delayFlow.Controls.Add(new Label { Text = "Задержка:", TextAlign = ContentAlignment.MiddleLeft });
         _hoursUpDown = new NumericUpDown { Minimum = 0, Maximum = 999, Width = 50, Value = 0 };
@@ -109,13 +117,13 @@ public class ScenarioControl : UserControl
         delayFlow.Controls.Add(new Label { Text = ".", TextAlign = ContentAlignment.MiddleCenter });
         _msUpDown = new NumericUpDown { Minimum = 0, Maximum = 999, Width = 60, Value = 0 };
         delayFlow.Controls.Add(_msUpDown);
-        addGroup.Controls.Add(delayFlow);
+        groupInner.Controls.Add(delayFlow, 0, 0);
 
         var actionFlow = new FlowLayoutPanel
         {
-            Location = new Point(8, 47),
-            Size = new Size(500, 24),
-            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+            Dock = DockStyle.Fill,
+            AutoSize = true,
+            WrapContents = true
         };
         actionFlow.Controls.Add(new Label { Text = "Тип:", TextAlign = ContentAlignment.MiddleLeft });
         _actionTypeCombo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 105 };
@@ -129,11 +137,12 @@ public class ScenarioControl : UserControl
         _keyCombo.SelectedIndex = 0;
         actionFlow.Controls.Add(_keyCombo);
 
-        _addBtn = new Button { Text = "Добавить", Width = 100 };
+        _addBtn = new Button { Text = "Добавить" };
         _addBtn.Click += AddAction;
         actionFlow.Controls.Add(_addBtn);
 
-        addGroup.Controls.Add(actionFlow);
+        groupInner.Controls.Add(actionFlow, 0, 1);
+        addGroup.Controls.Add(groupInner);
         layout.Controls.Add(addGroup, 0, 2);
 
         var loopPanel = new FlowLayoutPanel { Dock = DockStyle.Fill, Height = 30 };
@@ -147,12 +156,13 @@ public class ScenarioControl : UserControl
 
         var bottomPanel = new TableLayoutPanel
         {
-            Dock = DockStyle.Fill, ColumnCount = 4, RowCount = 1, MinimumSize = new Size(0, 55)
+            Dock = DockStyle.Fill, ColumnCount = 5, RowCount = 1, MinimumSize = new Size(0, 55)
         };
-        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40));
-        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40));
-        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 10));
-        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 10));
+        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 160));
+        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 160));
+        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
 
         _startBtn = new Button
         {
@@ -177,13 +187,13 @@ public class ScenarioControl : UserControl
         };
         bottomPanel.Controls.Add(_stopBtn, 1, 0);
 
-        var saveBtn = new Button { Text = "Сохр.", Dock = DockStyle.Fill };
+        var saveBtn = new Button { Text = "Сохр." };
         saveBtn.Click += SaveScenario;
-        bottomPanel.Controls.Add(saveBtn, 2, 0);
+        bottomPanel.Controls.Add(saveBtn, 3, 0);
 
-        var loadBtn = new Button { Text = "Загр.", Dock = DockStyle.Fill };
+        var loadBtn = new Button { Text = "Загр." };
         loadBtn.Click += LoadScenario;
-        bottomPanel.Controls.Add(loadBtn, 3, 0);
+        bottomPanel.Controls.Add(loadBtn, 4, 0);
 
         layout.Controls.Add(bottomPanel, 0, 4);
         Controls.Add(layout);
