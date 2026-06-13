@@ -87,7 +87,7 @@ public class ScenarioControl : UserControl
         var addGroup = new GroupBox
         {
             Text = "Новое действие",
-            Height = 75,
+            Height = 90,
             Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
         };
 
@@ -136,7 +136,7 @@ public class ScenarioControl : UserControl
         _keyCombo.SelectedIndex = 0;
         actionFlow.Controls.Add(_keyCombo);
 
-        _addBtn = new Button { Text = "Добавить" };
+        _addBtn = new Button { Text = "Добавить", Width = 95 };
         _addBtn.Click += AddAction;
         actionFlow.Controls.Add(_addBtn);
 
@@ -155,7 +155,7 @@ public class ScenarioControl : UserControl
 
         var bottomPanel = new TableLayoutPanel
         {
-            Dock = DockStyle.Fill, ColumnCount = 4, RowCount = 1
+            Dock = DockStyle.Fill, ColumnCount = 4, RowCount = 1, MinimumSize = new Size(0, 45)
         };
         bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
         bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
