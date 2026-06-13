@@ -7,8 +7,6 @@ public class SimpleHoldControl : UserControl
 {
     private readonly KeyboardService _keyboard;
     private readonly Action<string> _updateStatus;
-    private readonly Action _emergencyStop;
-
     private ComboBox _keyCombo;
     private CheckBox _infiniteCheck;
     private NumericUpDown _durationUpDown;
@@ -22,11 +20,10 @@ public class SimpleHoldControl : UserControl
     private VirtualKeyCode? _selectedKey;
     private bool _isHolding;
 
-    public SimpleHoldControl(KeyboardService keyboard, Action<string> updateStatus, Action emergencyStop)
+    public SimpleHoldControl(KeyboardService keyboard, Action<string> updateStatus)
     {
         _keyboard = keyboard;
         _updateStatus = updateStatus;
-        _emergencyStop = emergencyStop;
 
         InitializeControls();
     }
@@ -36,14 +33,14 @@ public class SimpleHoldControl : UserControl
         var topLabel = new Label
         {
             Text = "Выберите клавишу (из списка или нажмите):",
-            Location = new Point(12, 10),
-            Size = new Size(300, 20)
+            Location = new Point(30, 30),
+            Size = new Size(350, 20)
         };
 
         _keyCombo = new ComboBox
         {
-            Location = new Point(12, 35),
-            Size = new Size(150, 25),
+            Location = new Point(30, 55),
+            Size = new Size(200, 25),
             DropDownStyle = ComboBoxStyle.DropDownList
         };
         _keyCombo.Items.AddRange(new[] { "W", "A", "S", "D", "X", "Space", "Ctrl", "Shift", "Alt", "Enter", "Q", "E", "R", "F", "Z", "C", "V", "Tab", "Esc", "Up", "Down", "Left", "Right", "1", "2", "3", "4", "5", "0" });
@@ -51,7 +48,7 @@ public class SimpleHoldControl : UserControl
 
         _durationUpDown = new NumericUpDown
         {
-            Location = new Point(12, 80),
+            Location = new Point(30, 100),
             Size = new Size(80, 25),
             Minimum = 1,
             Maximum = 9999,
@@ -61,25 +58,26 @@ public class SimpleHoldControl : UserControl
         var secLabel = new Label
         {
             Text = "секунд",
-            Location = new Point(100, 82),
-            Size = new Size(50, 20)
+            Location = new Point(115, 102),
+            Size = new Size(60, 20)
         };
 
         _infiniteCheck = new CheckBox
         {
             Text = "Бесконечно (до Стоп)",
-            Location = new Point(12, 105),
-            Size = new Size(180, 25)
+            Location = new Point(30, 135),
+            Size = new Size(200, 25)
         };
         _infiniteCheck.CheckedChanged += (_, _) => _durationUpDown.Enabled = !_infiniteCheck.Checked;
 
         _startBtn = new Button
         {
             Text = "Старт",
-            Location = new Point(12, 140),
-            Size = new Size(100, 35),
+            Location = new Point(30, 180),
+            Size = new Size(220, 55),
             BackColor = Color.LightGreen,
-            FlatStyle = FlatStyle.Flat
+            FlatStyle = FlatStyle.Flat,
+            Font = new Font(Font.FontFamily, 14, FontStyle.Bold)
         };
         _startBtn.FlatAppearance.BorderSize = 0;
         _startBtn.Click += StartHold;
@@ -87,10 +85,11 @@ public class SimpleHoldControl : UserControl
         _stopBtn = new Button
         {
             Text = "Стоп",
-            Location = new Point(120, 140),
-            Size = new Size(100, 35),
+            Location = new Point(270, 180),
+            Size = new Size(220, 55),
             BackColor = Color.LightCoral,
             FlatStyle = FlatStyle.Flat,
+            Font = new Font(Font.FontFamily, 14, FontStyle.Bold),
             Enabled = false
         };
         _stopBtn.FlatAppearance.BorderSize = 0;
@@ -99,9 +98,9 @@ public class SimpleHoldControl : UserControl
         _countdownLabel = new Label
         {
             Text = "",
-            Location = new Point(12, 190),
-            Size = new Size(200, 30),
-            Font = new Font(Font.FontFamily, 16, FontStyle.Bold),
+            Location = new Point(30, 260),
+            Size = new Size(460, 40),
+            Font = new Font(Font.FontFamily, 18, FontStyle.Bold),
             TextAlign = ContentAlignment.MiddleCenter,
             ForeColor = Color.DarkBlue
         };

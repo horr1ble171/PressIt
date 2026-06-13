@@ -11,7 +11,6 @@ public partial class MainForm : Form
     private TabControl _tabControl;
     private TabPage _tabSimple;
     private TabPage _tabScenario;
-    private Button _emergencyStop;
     private StatusStrip _statusStrip;
     private ToolStripStatusLabel _statusLabel;
 
@@ -44,7 +43,7 @@ public partial class MainForm : Form
         _tabControl.TabPages.Add(_tabSimple);
         _tabControl.TabPages.Add(_tabScenario);
 
-        _simpleHoldControl = new SimpleHoldControl(_keyboard, UpdateStatus, EmergencyStop)
+        _simpleHoldControl = new SimpleHoldControl(_keyboard, UpdateStatus)
         {
             Dock = DockStyle.Fill
         };
@@ -55,29 +54,6 @@ public partial class MainForm : Form
             Dock = DockStyle.Fill
         };
         _tabScenario.Controls.Add(_scenarioControl);
-
-        var bottomPanel = new Panel
-        {
-            Dock = DockStyle.Bottom,
-            Height = 50,
-            Padding = new Padding(6)
-        };
-
-        _emergencyStop = new Button
-        {
-            Text = "АВАРИЙНАЯ ОСТАНОВКА",
-            BackColor = Color.Red,
-            ForeColor = Color.White,
-            Font = new Font(Font.FontFamily, 10, FontStyle.Bold),
-            Dock = DockStyle.Fill,
-            FlatStyle = FlatStyle.Flat,
-            TextAlign = ContentAlignment.MiddleCenter
-        };
-        _emergencyStop.FlatAppearance.BorderSize = 0;
-        _emergencyStop.Click += (_, _) => EmergencyStop();
-        bottomPanel.Controls.Add(_emergencyStop);
-
-        Controls.Add(bottomPanel);
 
         _statusStrip = new StatusStrip();
         _statusLabel = new ToolStripStatusLabel("Готово")
