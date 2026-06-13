@@ -12,7 +12,10 @@ public class ScenarioControl : UserControl
     private readonly Action<string> _updateStatus;
 
     private ListBox _actionListBox;
-    private NumericUpDown _delayUpDown;
+    private NumericUpDown _hoursUpDown;
+    private NumericUpDown _minutesUpDown;
+    private NumericUpDown _secondsUpDown;
+    private NumericUpDown _msUpDown;
     private ComboBox _actionTypeCombo;
     private ComboBox _keyCombo;
     private Button _addBtn;
@@ -45,91 +48,91 @@ public class ScenarioControl : UserControl
         layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
-        var headerPanel = new Panel { Height = 30 };
-        headerPanel.Controls.Add(new Label
-        {
-            Text = "Действия:",
-            Location = new Point(0, 6),
-            AutoSize = true
-        });
-        _removeBtn = new Button
-        {
-            Text = "Удалить",
-            Location = new Point(0, 3),
-            Size = new Size(90, 24),
-            Anchor = AnchorStyles.Top | AnchorStyles.Right,
-            Enabled = false
-        };
-        _removeBtn.Click += RemoveAction;
-        headerPanel.Controls.Add(_removeBtn);
-        headerPanel.Controls.Add(new PictureBox
-        {
-            Image = AppResources.Logo,
-            SizeMode = PictureBoxSizeMode.Zoom,
-            Location = new Point(0, 0),
-            Size = new Size(32, 30),
-            Anchor = AnchorStyles.Top | AnchorStyles.Right
-        });
-        layout.Controls.Add(headerPanel, 0, 0);
-
-        _actionListBox = new ListBox
+        var headerLayout = new TableLayoutPanel
         {
             Dock = DockStyle.Fill,
-            DataSource = _actions
+            ColumnCount = 3,
+            RowCount = 1,
+            Height = 30
         };
+        headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        headerLayout.Controls.Add(new Label { Text = "Действия:", Anchor = AnchorStyles.Left }, 0, 0);
+        _removeBtn = new Button
+        {
+            Text = "Удалить", Size = new Size(90, 24), Anchor = AnchorStyles.Right, Enabled = false
+        };
+        _removeBtn.Click += RemoveAction;
+        var rightPanel = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Fill, FlowDirection = FlowDirection.RightToLeft, WrapContents = false
+        };
+        rightPanel.Controls.Add(new PictureBox
+        {
+            Image = AppResources.Logo, SizeMode = PictureBoxSizeMode.Zoom, Size = new Size(32, 30)
+        });
+        rightPanel.Controls.Add(_removeBtn);
+        headerLayout.Controls.Add(rightPanel, 2, 0);
+        layout.Controls.Add(headerLayout, 0, 0);
+
+        _actionListBox = new ListBox { Dock = DockStyle.Fill, DataSource = _actions };
         _actionListBox.SelectedIndexChanged += (_, _) =>
             _removeBtn.Enabled = _actionListBox.SelectedItem != null;
         layout.Controls.Add(_actionListBox, 0, 1);
 
-        var addGroup = new GroupBox
-        {
-            Text = "Новое действие",
-            Dock = DockStyle.Fill
-        };
-        var innerLayout = new TableLayoutPanel
-        {
-            Dock = DockStyle.Fill,
-            ColumnCount = 7,
-            RowCount = 1,
-            Padding = new Padding(8, 20, 8, 4)
-        };
-        innerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-        innerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 75));
-        innerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-        innerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 105));
-        innerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-        innerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 95));
-        innerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        var addGroup = new GroupBox { Text = "Новое действие", Dock = DockStyle.Fill };
 
-        innerLayout.Controls.Add(new Label { Text = "Задержка:", Anchor = AnchorStyles.Left, TextAlign = ContentAlignment.MiddleLeft }, 0, 0);
-        _delayUpDown = new NumericUpDown { Minimum = 0, Maximum = 60000, Value = 1000 };
-        innerLayout.Controls.Add(_delayUpDown, 1, 0);
+        var addInner = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill, ColumnCount = 2, RowCount = 2, Padding = new Padding(8, 20, 8, 4)
+        };
+        addInner.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        addInner.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        addInner.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        addInner.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
-        innerLayout.Controls.Add(new Label { Text = "Тип:", Anchor = AnchorStyles.Left, TextAlign = ContentAlignment.MiddleLeft }, 2, 0);
-        _actionTypeCombo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList };
+        var delayFlow = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoSize = true };
+        delayFlow.Controls.Add(new Label { Text = "Задержка:", TextAlign = ContentAlignment.MiddleLeft });
+        _hoursUpDown = new NumericUpDown { Minimum = 0, Maximum = 999, Width = 50, Value = 0 };
+        delayFlow.Controls.Add(_hoursUpDown);
+        delayFlow.Controls.Add(new Label { Text = ":", TextAlign = ContentAlignment.MiddleCenter });
+        _minutesUpDown = new NumericUpDown { Minimum = 0, Maximum = 59, Width = 50, Value = 0 };
+        delayFlow.Controls.Add(_minutesUpDown);
+        delayFlow.Controls.Add(new Label { Text = ":", TextAlign = ContentAlignment.MiddleCenter });
+        _secondsUpDown = new NumericUpDown { Minimum = 0, Maximum = 59, Width = 50, Value = 1 };
+        delayFlow.Controls.Add(_secondsUpDown);
+        delayFlow.Controls.Add(new Label { Text = ".", TextAlign = ContentAlignment.MiddleCenter });
+        _msUpDown = new NumericUpDown { Minimum = 0, Maximum = 999, Width = 60, Value = 0 };
+        delayFlow.Controls.Add(_msUpDown);
+        addInner.Controls.Add(delayFlow, 0, 0);
+        addInner.SetColumnSpan(delayFlow, 2);
+
+        var actionFlow = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoSize = true };
+        actionFlow.Controls.Add(new Label { Text = "Тип:", TextAlign = ContentAlignment.MiddleLeft });
+        _actionTypeCombo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 105 };
         _actionTypeCombo.Items.AddRange(new[] { ScenarioAction.GetActionTypeDisplayName(ActionType.Press), ScenarioAction.GetActionTypeDisplayName(ActionType.Release), ScenarioAction.GetActionTypeDisplayName(ActionType.Tap) });
         _actionTypeCombo.SelectedIndex = 0;
-        innerLayout.Controls.Add(_actionTypeCombo, 3, 0);
+        actionFlow.Controls.Add(_actionTypeCombo);
 
-        innerLayout.Controls.Add(new Label { Text = "Клавиша:", Anchor = AnchorStyles.Left, TextAlign = ContentAlignment.MiddleLeft }, 4, 0);
-        _keyCombo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList };
+        actionFlow.Controls.Add(new Label { Text = "Клавиша:", TextAlign = ContentAlignment.MiddleLeft });
+        _keyCombo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 95 };
         _keyCombo.Items.AddRange(new[] { "W", "A", "S", "D", "X", "Space", "Ctrl", "Shift", "Alt", "Enter", "Q", "E", "R", "F", "Z", "C", "V", "Tab", "Esc", "Up", "Down", "Left", "Right", "1", "2", "3", "4", "5", "0" });
         _keyCombo.SelectedIndex = 0;
-        innerLayout.Controls.Add(_keyCombo, 5, 0);
+        actionFlow.Controls.Add(_keyCombo);
 
-        _addBtn = new Button { Text = "Добавить", Dock = DockStyle.Fill };
+        _addBtn = new Button { Text = "Добавить", Width = 100 };
         _addBtn.Click += AddAction;
-        innerLayout.Controls.Add(_addBtn, 6, 0);
+        actionFlow.Controls.Add(_addBtn);
 
-        addGroup.Controls.Add(innerLayout);
+        addInner.Controls.Add(actionFlow, 0, 1);
+        addInner.SetColumnSpan(actionFlow, 2);
+        addGroup.Controls.Add(addInner);
         layout.Controls.Add(addGroup, 0, 2);
 
         var bottomPanel = new TableLayoutPanel
         {
-            Dock = DockStyle.Fill,
-            ColumnCount = 4,
-            RowCount = 1,
-            MinimumSize = new Size(0, 55)
+            Dock = DockStyle.Fill, ColumnCount = 4, RowCount = 1, MinimumSize = new Size(0, 55)
         };
         bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40));
         bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 40));
@@ -138,10 +141,7 @@ public class ScenarioControl : UserControl
 
         _startBtn = new Button
         {
-            Text = "Запустить",
-            Dock = DockStyle.Fill,
-            BackColor = Color.LightGreen,
-            FlatStyle = FlatStyle.Flat
+            Text = "Запустить", Dock = DockStyle.Fill, BackColor = Color.LightGreen, FlatStyle = FlatStyle.Flat
         };
         _startBtn.FlatAppearance.BorderSize = 0;
         _startBtn.Click += StartScenario;
@@ -149,11 +149,7 @@ public class ScenarioControl : UserControl
 
         _stopBtn = new Button
         {
-            Text = "Остановить",
-            Dock = DockStyle.Fill,
-            BackColor = Color.LightCoral,
-            FlatStyle = FlatStyle.Flat,
-            Enabled = false
+            Text = "Остановить", Dock = DockStyle.Fill, BackColor = Color.LightCoral, FlatStyle = FlatStyle.Flat, Enabled = false
         };
         _stopBtn.FlatAppearance.BorderSize = 0;
         _stopBtn.Click += (_, _) => _runner.Stop();
@@ -173,9 +169,13 @@ public class ScenarioControl : UserControl
 
     private void AddAction(object? sender, EventArgs e)
     {
+        var delayMs = ((int)_hoursUpDown.Value * 3600 +
+                       (int)_minutesUpDown.Value * 60 +
+                       (int)_secondsUpDown.Value) * 1000 +
+                       (int)_msUpDown.Value;
         var action = new ScenarioAction
         {
-            DelayMs = (int)_delayUpDown.Value,
+            DelayMs = delayMs,
             ActionType = ScenarioAction.ParseActionType(_actionTypeCombo.SelectedItem?.ToString() ?? "Нажать"),
             Key = _keyCombo.SelectedItem?.ToString() ?? "Space"
         };
