@@ -16,6 +16,30 @@ public partial class MainForm : Form
     [DllImport("user32.dll")]
     private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
+    private class HotkeyFilter : IMessageFilter
+    {
+        private readonly MainForm _form;
+        public HotkeyFilter(MainForm form) => _form = form;
+        public bool PreFilterMessage(ref Message m)
+        {
+            if (m.Msg == WM_HOTKEY)
+            {
+                var id = m.WParam.ToInt32();
+                if (id == HOTKEY_ID_START)
+                {
+                    _form._tabControl.SelectedTab = _form._tabScenario;
+                    _form._scenarioControl?.TryStart();
+                }
+                else if (id == HOTKEY_ID_STOP)
+                {
+                    _form.EmergencyStop();
+                }
+                return true;
+            }
+            return false;
+        }
+    }
+
     private readonly KeyboardService _keyboard = new();
     private readonly ScenarioRunner _runner;
 
@@ -44,6 +68,10 @@ public partial class MainForm : Form
         _runner.StatusChanged += msg => BeginInvoke(() => _statusLabel.Text = msg);
 
         InitializeControls();
+
+        Application.AddMessageFilter(new HotkeyFilter(this));
+        RegisterHotKey(IntPtr.Zero, HOTKEY_ID_START, 0, (int)Keys.F6);
+        RegisterHotKey(IntPtr.Zero, HOTKEY_ID_STOP, 0, (int)Keys.F7);
     }
 
     private void InitializeControls()
@@ -93,40 +121,10 @@ public partial class MainForm : Form
         UpdateStatus("Аварийная остановка — все клавиши отпущены");
     }
 
-    protected override void WndProc(ref Message m)
-    {
-        if (m.Msg == WM_HOTKEY)
-        {
-            var id = m.WParam.ToInt32();
-            if (id == HOTKEY_ID_START)
-            {
-                _tabControl.SelectedTab = _tabScenario;
-                _scenarioControl?.TryStart();
-            }
-            else if (id == HOTKEY_ID_STOP)
-            {
-                EmergencyStop();
-            }
-        }
-        base.WndProc(ref m);
-    }
-
-    protected override void OnHandleCreated(EventArgs e)
-    {
-        base.OnHandleCreated(e);
-        RegisterHotKey(Handle, HOTKEY_ID_START, 0, (int)Keys.F6);
-        RegisterHotKey(Handle, HOTKEY_ID_STOP, 0, (int)Keys.F7);
-    }
-
-    protected override void OnHandleDestroyed(EventArgs e)
-    {
-        UnregisterHotKey(Handle, HOTKEY_ID_START);
-        UnregisterHotKey(Handle, HOTKEY_ID_STOP);
-        base.OnHandleDestroyed(e);
-    }
-
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
+        UnregisterHotKey(IntPtr.Zero, HOTKEY_ID_START);
+        UnregisterHotKey(IntPtr.Zero, HOTKEY_ID_STOP);
         _keyboard.ReleaseAll();
         base.OnFormClosing(e);
     }

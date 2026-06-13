@@ -38,6 +38,8 @@ public class ScenarioRunner
                 pass++;
                 token.ThrowIfCancellationRequested();
 
+                await Task.Yield(); // let UI message loop process WM_HOTKEY
+
                 foreach (var action in actions)
                 {
                     token.ThrowIfCancellationRequested();
