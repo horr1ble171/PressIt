@@ -8,6 +8,9 @@ public class ScenarioRunner
 {
     private readonly KeyboardService _keyboard;
     private CancellationTokenSource? _cts;
+    private System.Threading.Timer? _holdTimer;
+    private readonly HashSet<VirtualKeyCode> _heldKeys = [];
+    private readonly object _holdLock = new();
 
     public bool IsRunning => _cts is not null && !_cts.IsCancellationRequested;
 
@@ -54,9 +57,11 @@ public class ScenarioRunner
                     {
                         case ActionType.Press:
                             _keyboard.HoldKey(key);
+                            StartHoldTimer(key);
                             StatusChanged?.Invoke($"Зажата {action.Key}");
                             break;
                         case ActionType.Release:
+                            StopHoldTimer(key);
                             _keyboard.ReleaseKey(key);
                             StatusChanged?.Invoke($"Отпущена {action.Key}");
                             break;
@@ -71,16 +76,19 @@ public class ScenarioRunner
                     StatusChanged?.Invoke($"Проход {pass} выполнен");
             }
 
+            StopAllHolds();
             _keyboard.ReleaseAll();
             StatusChanged?.Invoke("Сценарий завершён");
         }
         catch (OperationCanceledException)
         {
+            StopAllHolds();
             _keyboard.ReleaseAll();
             StatusChanged?.Invoke("Сценарий остановлен");
         }
         catch (Exception ex)
         {
+            StopAllHolds();
             _keyboard.ReleaseAll();
             StatusChanged?.Invoke($"Ошибка: {ex.Message}");
         }
@@ -95,5 +103,52 @@ public class ScenarioRunner
         _cts?.Cancel();
         _cts?.Dispose();
         _cts = null;
+        StopAllHolds();
+        _keyboard.ReleaseAll();
+    }
+
+    private void StartHoldTimer(VirtualKeyCode key)
+    {
+        lock (_holdLock)
+        {
+            _heldKeys.Add(key);
+            if (_holdTimer == null)
+                _holdTimer = new System.Threading.Timer(_ => HoldTick(), null, 30, 30);
+        }
+    }
+
+    private void StopHoldTimer(VirtualKeyCode key)
+    {
+        lock (_holdLock)
+        {
+            _heldKeys.Remove(key);
+            if (_heldKeys.Count == 0)
+            {
+                _holdTimer?.Dispose();
+                _holdTimer = null;
+            }
+        }
+    }
+
+    private void StopAllHolds()
+    {
+        lock (_holdLock)
+        {
+            _holdTimer?.Dispose();
+            _holdTimer = null;
+            _heldKeys.Clear();
+        }
+    }
+
+    private void HoldTick()
+    {
+        VirtualKeyCode[] keys;
+        lock (_holdLock)
+        {
+            if (_heldKeys.Count == 0) return;
+            keys = [.. _heldKeys];
+        }
+        foreach (var key in keys)
+            _keyboard.PressKeyDown(key);
     }
 }
