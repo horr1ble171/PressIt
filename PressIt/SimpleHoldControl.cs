@@ -107,7 +107,16 @@ public class SimpleHoldControl : UserControl
             ForeColor = Color.DarkBlue
         };
 
-        Controls.AddRange(new Control[] { topLabel, _keyCombo, _durationUpDown, secLabel, _infiniteCheck, _startBtn, _stopBtn, _countdownLabel });
+        var logo = new PictureBox
+        {
+            Image = AppResources.Logo,
+            SizeMode = PictureBoxSizeMode.Zoom,
+            Location = new Point(532, 25),
+            Size = new Size(48, 48),
+            Anchor = AnchorStyles.Top | AnchorStyles.Right
+        };
+
+        Controls.AddRange(new Control[] { topLabel, _keyCombo, _durationUpDown, secLabel, _infiniteCheck, _startBtn, _stopBtn, _countdownLabel, logo });
 
         _holdTimer = new System.Windows.Forms.Timer { Interval = 30 };
         _holdTimer.Tick += HoldTick;

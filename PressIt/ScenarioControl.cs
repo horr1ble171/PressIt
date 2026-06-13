@@ -116,7 +116,16 @@ public class ScenarioControl : UserControl
         var loadBtn = new Button { Text = "Загр.", Location = new Point(470, 350), Size = new Size(65, 50), Anchor = AnchorStyles.Bottom | AnchorStyles.Right };
         loadBtn.Click += LoadScenario;
 
-        Controls.AddRange(new Control[] { listLabel, _actionListBox, addGroup, _startBtn, _stopBtn, saveBtn, loadBtn });
+        var logo = new PictureBox
+        {
+            Image = AppResources.Logo,
+            SizeMode = PictureBoxSizeMode.Zoom,
+            Location = new Point(532, 8),
+            Size = new Size(48, 48),
+            Anchor = AnchorStyles.Top | AnchorStyles.Right
+        };
+
+        Controls.AddRange(new Control[] { listLabel, _actionListBox, addGroup, _startBtn, _stopBtn, saveBtn, loadBtn, logo });
     }
 
     private void AddAction(object? sender, EventArgs e)
