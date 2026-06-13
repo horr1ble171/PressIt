@@ -46,7 +46,7 @@ public class ScenarioControl : UserControl
             Padding = new Padding(12, 8, 12, 8)
         };
         layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-        layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 160));
         layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
@@ -79,7 +79,7 @@ public class ScenarioControl : UserControl
         headerLayout.Controls.Add(rightPanel, 2, 0);
         layout.Controls.Add(headerLayout, 0, 0);
 
-        _actionListBox = new ListBox { Dock = DockStyle.Fill, DataSource = _actions };
+        _actionListBox = new ListBox { Dock = DockStyle.Fill, DataSource = _actions, IntegralHeight = false };
         _actionListBox.SelectedIndexChanged += (_, _) =>
             _removeBtn.Enabled = _actionListBox.SelectedItem != null;
         layout.Controls.Add(_actionListBox, 0, 1);
@@ -94,7 +94,7 @@ public class ScenarioControl : UserControl
         var delayFlow = new FlowLayoutPanel
         {
             Location = new Point(8, 20),
-            Size = new Size(100, 24),
+            Size = new Size(500, 24),
             Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
         };
         delayFlow.Controls.Add(new Label { Text = "Задержка:", TextAlign = ContentAlignment.MiddleLeft });
@@ -114,7 +114,7 @@ public class ScenarioControl : UserControl
         var actionFlow = new FlowLayoutPanel
         {
             Location = new Point(8, 47),
-            Size = new Size(100, 24),
+            Size = new Size(500, 24),
             Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
         };
         actionFlow.Controls.Add(new Label { Text = "Тип:", TextAlign = ContentAlignment.MiddleLeft });
