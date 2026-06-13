@@ -1,0 +1,111 @@
+using PressIt.Services;
+using WindowsInput.Native;
+
+namespace PressIt;
+
+public partial class MainForm : Form
+{
+    private readonly KeyboardService _keyboard = new();
+    private readonly ScenarioRunner _runner;
+
+    private TabControl _tabControl;
+    private TabPage _tabSimple;
+    private TabPage _tabScenario;
+    private Button _emergencyStop;
+    private StatusStrip _statusStrip;
+    private ToolStripStatusLabel _statusLabel;
+
+    private SimpleHoldControl _simpleHoldControl;
+    private ScenarioControl _scenarioControl;
+
+    public MainForm()
+    {
+        Text = "PressIt";
+        ClientSize = new Size(420, 420);
+        MinimumSize = new Size(380, 350);
+        FormBorderStyle = FormBorderStyle.FixedSingle;
+        MaximizeBox = false;
+        StartPosition = FormStartPosition.CenterScreen;
+
+        _runner = new ScenarioRunner(_keyboard);
+        _runner.StatusChanged += msg => BeginInvoke(() => _statusLabel.Text = msg);
+
+        InitializeControls();
+    }
+
+    private void InitializeControls()
+    {
+        _tabControl = new TabControl { Dock = DockStyle.Fill };
+        Controls.Add(_tabControl);
+
+        _tabSimple = new TabPage("Simple Hold");
+        _tabScenario = new TabPage("Scenario");
+
+        _tabControl.TabPages.Add(_tabSimple);
+        _tabControl.TabPages.Add(_tabScenario);
+
+        _simpleHoldControl = new SimpleHoldControl(_keyboard, UpdateStatus, EmergencyStop)
+        {
+            Dock = DockStyle.Fill
+        };
+        _tabSimple.Controls.Add(_simpleHoldControl);
+
+        _scenarioControl = new ScenarioControl(_keyboard, _runner, UpdateStatus)
+        {
+            Dock = DockStyle.Fill
+        };
+        _tabScenario.Controls.Add(_scenarioControl);
+
+        var bottomPanel = new Panel
+        {
+            Dock = DockStyle.Bottom,
+            Height = 50,
+            Padding = new Padding(6)
+        };
+
+        _emergencyStop = new Button
+        {
+            Text = "EMERGENCY STOP",
+            BackColor = Color.Red,
+            ForeColor = Color.White,
+            Font = new Font(Font.FontFamily, 10, FontStyle.Bold),
+            Dock = DockStyle.Fill,
+            FlatStyle = FlatStyle.Flat,
+            TextAlign = ContentAlignment.MiddleCenter
+        };
+        _emergencyStop.FlatAppearance.BorderSize = 0;
+        _emergencyStop.Click += (_, _) => EmergencyStop();
+        bottomPanel.Controls.Add(_emergencyStop);
+
+        Controls.Add(bottomPanel);
+
+        _statusStrip = new StatusStrip();
+        _statusLabel = new ToolStripStatusLabel("Ready")
+        {
+            Spring = true,
+            TextAlign = ContentAlignment.MiddleLeft
+        };
+        _statusStrip.Items.Add(_statusLabel);
+        Controls.Add(_statusStrip);
+    }
+
+    public void UpdateStatus(string text)
+    {
+        _statusLabel.Text = text;
+    }
+
+    public void EmergencyStop()
+    {
+        _runner.Stop();
+        _keyboard.ReleaseAll();
+        _simpleHoldControl?.Stop();
+        _scenarioControl?.Stop();
+        UpdateStatus("Emergency stop - all keys released");
+    }
+
+    protected override void OnFormClosing(FormClosingEventArgs e)
+    {
+        _keyboard.ReleaseAll();
+        base.OnFormClosing(e);
+    }
+}
