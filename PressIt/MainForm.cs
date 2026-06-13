@@ -21,10 +21,10 @@ public partial class MainForm : Form
     public MainForm()
     {
         Text = "PressIt";
-        ClientSize = new Size(420, 420);
-        MinimumSize = new Size(380, 350);
-        FormBorderStyle = FormBorderStyle.FixedSingle;
-        MaximizeBox = false;
+        ClientSize = new Size(600, 500);
+        MinimumSize = new Size(500, 400);
+        FormBorderStyle = FormBorderStyle.Sizable;
+        MaximizeBox = true;
         StartPosition = FormStartPosition.CenterScreen;
 
         _runner = new ScenarioRunner(_keyboard);

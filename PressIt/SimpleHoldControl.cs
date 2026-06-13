@@ -67,7 +67,7 @@ public class SimpleHoldControl : UserControl
 
         _infiniteCheck = new CheckBox
         {
-            Text = "Бесконечно (до Stop)",
+            Text = "Бесконечно (до Стоп)",
             Location = new Point(12, 105),
             Size = new Size(180, 25)
         };
