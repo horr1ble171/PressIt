@@ -172,7 +172,8 @@ public class ScenarioControl : UserControl
             _runner.Stop();
             _startBtn.Enabled = true;
             _stopBtn.Enabled = false;
-            this.FindForm()!.WindowState = FormWindowState.Normal;
+            if (this.FindForm() is MainForm main)
+                main.RestoreForm();
         };
         bottomPanel.Controls.Add(_stopBtn, 1, 0);
 
@@ -224,13 +225,15 @@ public class ScenarioControl : UserControl
         _startBtn.Enabled = false;
         _stopBtn.Enabled = true;
 
-        this.FindForm()!.WindowState = FormWindowState.Minimized;
+        var form = this.FindForm()!;
+        form.Hide();
         await Task.Delay(200);
 
         var list = _actions.ToList();
         await _runner.RunAsync(list, loopCount);
 
-        this.FindForm()!.WindowState = FormWindowState.Normal;
+        if (this.FindForm() is MainForm main)
+            main.RestoreForm();
         _startBtn.Enabled = true;
         _stopBtn.Enabled = false;
     }
@@ -241,7 +244,8 @@ public class ScenarioControl : UserControl
         _runner.Stop();
         _startBtn.Enabled = true;
         _stopBtn.Enabled = false;
-        this.FindForm()!.WindowState = FormWindowState.Normal;
+        if (this.FindForm() is MainForm main)
+            main.RestoreForm();
     }
 
     public void TryStart()
@@ -260,8 +264,8 @@ public class ScenarioControl : UserControl
         _runner.Stop();
         _startBtn.Enabled = true;
         _stopBtn.Enabled = false;
-        if (this.FindForm() is { } form)
-            form.WindowState = FormWindowState.Normal;
+        if (this.FindForm() is MainForm main)
+            main.RestoreForm();
     }
 
     private void SaveScenario(object? sender, EventArgs e)

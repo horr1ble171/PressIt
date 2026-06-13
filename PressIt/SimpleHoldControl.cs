@@ -152,7 +152,8 @@ public class SimpleHoldControl : UserControl
         _stopBtn.Enabled = true;
         _keyCombo.Enabled = false;
 
-        this.FindForm()!.WindowState = FormWindowState.Minimized;
+        var form = this.FindForm()!;
+        form.Hide();
 
         this.BeginInvoke(() =>
         {
@@ -183,7 +184,8 @@ public class SimpleHoldControl : UserControl
 
         _updateStatus("Готово");
 
-        this.FindForm()!.WindowState = FormWindowState.Normal;
+        if (this.FindForm() is MainForm main)
+            main.RestoreForm();
     }
 
     private void HoldTick(object? sender, EventArgs e)

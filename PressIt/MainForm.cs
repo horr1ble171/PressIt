@@ -6,42 +6,14 @@ namespace PressIt;
 
 public partial class MainForm : Form
 {
-    private const int WM_HOTKEY = 0x0312;
-    private const int HOTKEY_ID_START = 1;
-    private const int HOTKEY_ID_STOP = 2;
-
     [DllImport("user32.dll")]
-    private static extern bool RegisterHotKey(IntPtr hWnd, int id, int fsModifiers, int vk);
-
-    [DllImport("user32.dll")]
-    private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
-
-    private class HotkeyFilter : IMessageFilter
-    {
-        private readonly MainForm _form;
-        public HotkeyFilter(MainForm form) => _form = form;
-        public bool PreFilterMessage(ref Message m)
-        {
-            if (m.Msg == WM_HOTKEY)
-            {
-                var id = m.WParam.ToInt32();
-                if (id == HOTKEY_ID_START)
-                {
-                    _form._tabControl.SelectedTab = _form._tabScenario;
-                    _form._scenarioControl?.TryStart();
-                }
-                else if (id == HOTKEY_ID_STOP)
-                {
-                    _form.EmergencyStop();
-                }
-                return true;
-            }
-            return false;
-        }
-    }
+    private static extern short GetAsyncKeyState(int vKey);
 
     private readonly KeyboardService _keyboard = new();
     private readonly ScenarioRunner _runner;
+    private readonly System.Windows.Forms.Timer _hotkeyTimer;
+    private bool _f6WasDown;
+    private bool _f7WasDown;
 
     private TabControl _tabControl;
     private TabPage _tabSimple;
@@ -69,9 +41,27 @@ public partial class MainForm : Form
 
         InitializeControls();
 
-        Application.AddMessageFilter(new HotkeyFilter(this));
-        RegisterHotKey(IntPtr.Zero, HOTKEY_ID_START, 0, (int)Keys.F6);
-        RegisterHotKey(IntPtr.Zero, HOTKEY_ID_STOP, 0, (int)Keys.F7);
+        _hotkeyTimer = new System.Windows.Forms.Timer { Interval = 200 };
+        _hotkeyTimer.Tick += PollHotkeys;
+        _hotkeyTimer.Start();
+    }
+
+    private void PollHotkeys(object? sender, EventArgs e)
+    {
+        var f6Down = (GetAsyncKeyState((int)Keys.F6) & 0x8000) != 0;
+        var f7Down = (GetAsyncKeyState((int)Keys.F7) & 0x8000) != 0;
+
+        if (f6Down && !_f6WasDown)
+        {
+            _tabControl.SelectedTab = _tabScenario;
+            _scenarioControl?.TryStart();
+        }
+
+        if (f7Down && !_f7WasDown)
+            EmergencyStop();
+
+        _f6WasDown = f6Down;
+        _f7WasDown = f7Down;
     }
 
     private void InitializeControls()
@@ -121,10 +111,22 @@ public partial class MainForm : Form
         UpdateStatus("Аварийная остановка — все клавиши отпущены");
     }
 
+    public void RestoreForm()
+    {
+        if (InvokeRequired)
+        {
+            BeginInvoke(RestoreForm);
+            return;
+        }
+        Show();
+        WindowState = FormWindowState.Normal;
+        Activate();
+        BringToFront();
+    }
+
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
-        UnregisterHotKey(IntPtr.Zero, HOTKEY_ID_START);
-        UnregisterHotKey(IntPtr.Zero, HOTKEY_ID_STOP);
+        _hotkeyTimer.Stop();
         _keyboard.ReleaseAll();
         base.OnFormClosing(e);
     }
