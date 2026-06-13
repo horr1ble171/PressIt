@@ -42,11 +42,12 @@ public class ScenarioControl : UserControl
         {
             Dock = DockStyle.Fill,
             ColumnCount = 1,
-            RowCount = 4,
+            RowCount = 5,
             Padding = new Padding(12, 8, 12, 8)
         };
         layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
@@ -61,19 +62,6 @@ public class ScenarioControl : UserControl
         headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         headerLayout.Controls.Add(new Label { Text = "Действия:", Anchor = AnchorStyles.Left }, 0, 0);
-
-        var loopPanel = new FlowLayoutPanel
-        {
-            Anchor = AnchorStyles.Left | AnchorStyles.Right, Height = 30, WrapContents = false
-        };
-        _loopCheckBox = new CheckBox { Text = "Зациклить", AutoSize = true };
-        loopPanel.Controls.Add(_loopCheckBox);
-        _loopCountUpDown = new NumericUpDown { Minimum = 0, Maximum = 9999, Width = 60, Value = 1, Enabled = false };
-        loopPanel.Controls.Add(_loopCountUpDown);
-        loopPanel.Controls.Add(new Label { Text = "раз (0 = беск.)", AutoSize = true });
-        _loopCheckBox.CheckedChanged += (_, _) => _loopCountUpDown.Enabled = _loopCheckBox.Checked;
-        headerLayout.Controls.Add(loopPanel, 1, 0);
-
         _removeBtn = new Button
         {
             Text = "Удалить", Size = new Size(90, 24), Anchor = AnchorStyles.Right, Enabled = false
@@ -148,6 +136,15 @@ public class ScenarioControl : UserControl
         addGroup.Controls.Add(actionFlow);
         layout.Controls.Add(addGroup, 0, 2);
 
+        var loopPanel = new FlowLayoutPanel { Dock = DockStyle.Fill, Height = 30 };
+        _loopCheckBox = new CheckBox { Text = "Зациклить", AutoSize = true };
+        loopPanel.Controls.Add(_loopCheckBox);
+        _loopCountUpDown = new NumericUpDown { Minimum = 0, Maximum = 9999, Width = 60, Value = 1, Enabled = false };
+        loopPanel.Controls.Add(_loopCountUpDown);
+        loopPanel.Controls.Add(new Label { Text = "раз (0 = беск.)", AutoSize = true });
+        _loopCheckBox.CheckedChanged += (_, _) => _loopCountUpDown.Enabled = _loopCheckBox.Checked;
+        layout.Controls.Add(loopPanel, 0, 3);
+
         var bottomPanel = new TableLayoutPanel
         {
             Dock = DockStyle.Fill, ColumnCount = 4, RowCount = 1, MinimumSize = new Size(0, 55)
@@ -187,7 +184,7 @@ public class ScenarioControl : UserControl
         loadBtn.Click += LoadScenario;
         bottomPanel.Controls.Add(loadBtn, 3, 0);
 
-        layout.Controls.Add(bottomPanel, 0, 3);
+        layout.Controls.Add(bottomPanel, 0, 4);
         Controls.Add(layout);
     }
 

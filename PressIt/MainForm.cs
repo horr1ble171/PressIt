@@ -44,9 +44,6 @@ public partial class MainForm : Form
         _runner.StatusChanged += msg => BeginInvoke(() => _statusLabel.Text = msg);
 
         InitializeControls();
-
-        RegisterHotKey(Handle, HOTKEY_ID_START, 0, (int)Keys.F6);
-        RegisterHotKey(Handle, HOTKEY_ID_STOP, 0, (int)Keys.F7);
     }
 
     private void InitializeControls()
@@ -114,10 +111,22 @@ public partial class MainForm : Form
         base.WndProc(ref m);
     }
 
-    protected override void OnFormClosing(FormClosingEventArgs e)
+    protected override void OnHandleCreated(EventArgs e)
+    {
+        base.OnHandleCreated(e);
+        RegisterHotKey(Handle, HOTKEY_ID_START, 0, (int)Keys.F6);
+        RegisterHotKey(Handle, HOTKEY_ID_STOP, 0, (int)Keys.F7);
+    }
+
+    protected override void OnHandleDestroyed(EventArgs e)
     {
         UnregisterHotKey(Handle, HOTKEY_ID_START);
         UnregisterHotKey(Handle, HOTKEY_ID_STOP);
+        base.OnHandleDestroyed(e);
+    }
+
+    protected override void OnFormClosing(FormClosingEventArgs e)
+    {
         _keyboard.ReleaseAll();
         base.OnFormClosing(e);
     }
