@@ -16,6 +16,7 @@ public class SimpleHoldControl : UserControl
     private Button _stopBtn;
     private Label _countdownLabel;
     private System.Windows.Forms.Timer _countdownTimer;
+    private System.Windows.Forms.Timer _holdTimer;
     private int _remainingSeconds;
 
     private VirtualKeyCode? _selectedKey;
@@ -107,6 +108,9 @@ public class SimpleHoldControl : UserControl
 
         Controls.AddRange(new Control[] { topLabel, _keyCombo, _durationUpDown, secLabel, _infiniteCheck, _startBtn, _stopBtn, _countdownLabel });
 
+        _holdTimer = new System.Windows.Forms.Timer { Interval = 30 };
+        _holdTimer.Tick += HoldTick;
+
         _countdownTimer = new System.Windows.Forms.Timer { Interval = 1000 };
         _countdownTimer.Tick += CountdownTick;
     }
@@ -119,7 +123,6 @@ public class SimpleHoldControl : UserControl
         _selectedKey = KeyHelper.Map.GetValueOrDefault(keyName);
         if (_selectedKey == null) return;
 
-        _keyboard.HoldKey(_selectedKey.Value);
         _isHolding = true;
 
         _updateStatus($"Holding {keyName}");
@@ -138,6 +141,14 @@ public class SimpleHoldControl : UserControl
         _startBtn.Enabled = false;
         _stopBtn.Enabled = true;
         _keyCombo.Enabled = false;
+
+        this.FindForm()!.WindowState = FormWindowState.Minimized;
+
+        this.BeginInvoke(() =>
+        {
+            _keyboard.HoldKey(_selectedKey.Value);
+            _holdTimer.Start();
+        });
     }
 
     private void StopHold(object? sender, EventArgs e)
@@ -147,6 +158,7 @@ public class SimpleHoldControl : UserControl
 
     public void Stop()
     {
+        _holdTimer.Stop();
         _countdownTimer.Stop();
         if (_isHolding && _selectedKey.HasValue)
         {
@@ -160,6 +172,14 @@ public class SimpleHoldControl : UserControl
         _keyCombo.Enabled = true;
 
         _updateStatus("Ready");
+
+        this.FindForm()!.WindowState = FormWindowState.Normal;
+    }
+
+    private void HoldTick(object? sender, EventArgs e)
+    {
+        if (_selectedKey.HasValue)
+            _keyboard.PressKeyDown(_selectedKey.Value);
     }
 
     private void CountdownTick(object? sender, EventArgs e)

@@ -22,6 +22,11 @@ public class KeyboardService
             _simulator.Keyboard.KeyUp(key);
     }
 
+    public void PressKeyDown(VirtualKeyCode key)
+    {
+        _simulator.Keyboard.KeyDown(key);
+    }
+
     public void TapKey(VirtualKeyCode key)
     {
         _simulator.Keyboard.KeyPress(key);
