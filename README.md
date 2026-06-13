@@ -1,5 +1,7 @@
 # PressIt
 
+[![Скачать](https://img.shields.io/github/v/release/horr1ble171/PressIt?label=%D0%A1%D0%BA%D0%B0%D1%87%D0%B0%D1%82%D1%8C&color=blue)](https://github.com/horr1ble171/PressIt/releases/latest)
+
 Утилита для автоматизации нажатий клавиш в Windows. Позволяет удерживать клавиши (режим «реального зажатия» с таймером 30 мс) и выполнять сценарии из последовательности действий с настраиваемыми задержками.
 
 ## Возможности
