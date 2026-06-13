@@ -24,6 +24,8 @@ public class ScenarioControl : UserControl
     private Button _stopBtn;
 
     private readonly BindingList<ScenarioAction> _actions = new();
+    private CheckBox _loopCheckBox;
+    private NumericUpDown _loopCountUpDown;
 
     public ScenarioControl(KeyboardService keyboard, ScenarioRunner runner, Action<string> updateStatus)
     {
@@ -59,6 +61,19 @@ public class ScenarioControl : UserControl
         headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
         headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         headerLayout.Controls.Add(new Label { Text = "Действия:", Anchor = AnchorStyles.Left }, 0, 0);
+
+        var loopPanel = new FlowLayoutPanel
+        {
+            Anchor = AnchorStyles.Left | AnchorStyles.Right, Height = 30, WrapContents = false
+        };
+        _loopCheckBox = new CheckBox { Text = "Зациклить", AutoSize = true };
+        loopPanel.Controls.Add(_loopCheckBox);
+        _loopCountUpDown = new NumericUpDown { Minimum = 0, Maximum = 9999, Width = 60, Value = 1, Enabled = false };
+        loopPanel.Controls.Add(_loopCountUpDown);
+        loopPanel.Controls.Add(new Label { Text = "раз (0 = беск.)", AutoSize = true });
+        _loopCheckBox.CheckedChanged += (_, _) => _loopCountUpDown.Enabled = _loopCheckBox.Checked;
+        headerLayout.Controls.Add(loopPanel, 1, 0);
+
         _removeBtn = new Button
         {
             Text = "Удалить", Size = new Size(90, 24), Anchor = AnchorStyles.Right, Enabled = false
@@ -155,7 +170,13 @@ public class ScenarioControl : UserControl
             Text = "Остановить", Dock = DockStyle.Fill, BackColor = Color.LightCoral, FlatStyle = FlatStyle.Flat, Enabled = false
         };
         _stopBtn.FlatAppearance.BorderSize = 0;
-        _stopBtn.Click += (_, _) => _runner.Stop();
+        _stopBtn.Click += (_, _) =>
+        {
+            _runner.Stop();
+            _startBtn.Enabled = true;
+            _stopBtn.Enabled = false;
+            this.FindForm()!.WindowState = FormWindowState.Normal;
+        };
         bottomPanel.Controls.Add(_stopBtn, 1, 0);
 
         var saveBtn = new Button { Text = "Сохр.", Dock = DockStyle.Fill };
@@ -199,12 +220,19 @@ public class ScenarioControl : UserControl
             return;
         }
 
+        var loopCount = _loopCheckBox.Checked ? (int)_loopCountUpDown.Value : 1;
+        if (_loopCheckBox.Checked && loopCount == 0)
+            loopCount = -1; // infinite
+
         _startBtn.Enabled = false;
         _stopBtn.Enabled = true;
 
-        var list = _actions.ToList();
-        await _runner.RunAsync(list);
+        this.FindForm()!.WindowState = FormWindowState.Minimized;
 
+        var list = _actions.ToList();
+        await _runner.RunAsync(list, loopCount);
+
+        this.FindForm()!.WindowState = FormWindowState.Normal;
         _startBtn.Enabled = true;
         _stopBtn.Enabled = false;
     }

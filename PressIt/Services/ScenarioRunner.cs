@@ -18,7 +18,7 @@ public class ScenarioRunner
         _keyboard = keyboard;
     }
 
-    public async Task RunAsync(List<ScenarioAction> actions)
+    public async Task RunAsync(List<ScenarioAction> actions, int loopCount = 1)
     {
         Stop();
         _cts = new CancellationTokenSource();
@@ -26,34 +26,47 @@ public class ScenarioRunner
 
         try
         {
-            foreach (var action in actions)
+            var infinite = loopCount <= 0;
+            var pass = 0;
+
+            while (infinite || pass < loopCount)
             {
+                pass++;
                 token.ThrowIfCancellationRequested();
 
-                if (action.DelayMs > 0)
-                    await Task.Delay(action.DelayMs, token);
-
-                token.ThrowIfCancellationRequested();
-
-                var key = (VirtualKeyCode)Enum.Parse(typeof(VirtualKeyCode), action.Key);
-
-                switch (action.ActionType)
+                foreach (var action in actions)
                 {
-                    case ActionType.Press:
-                        _keyboard.HoldKey(key);
-                        StatusChanged?.Invoke($"Зажата {action.Key}");
-                        break;
-                    case ActionType.Release:
-                        _keyboard.ReleaseKey(key);
-                        StatusChanged?.Invoke($"Отпущена {action.Key}");
-                        break;
-                    case ActionType.Tap:
-                        _keyboard.TapKey(key);
-                        StatusChanged?.Invoke($"Нажата {action.Key}");
-                        break;
+                    token.ThrowIfCancellationRequested();
+
+                    if (action.DelayMs > 0)
+                        await Task.Delay(action.DelayMs, token);
+
+                    token.ThrowIfCancellationRequested();
+
+                    var key = (VirtualKeyCode)Enum.Parse(typeof(VirtualKeyCode), action.Key);
+
+                    switch (action.ActionType)
+                    {
+                        case ActionType.Press:
+                            _keyboard.HoldKey(key);
+                            StatusChanged?.Invoke($"Зажата {action.Key}");
+                            break;
+                        case ActionType.Release:
+                            _keyboard.ReleaseKey(key);
+                            StatusChanged?.Invoke($"Отпущена {action.Key}");
+                            break;
+                        case ActionType.Tap:
+                            _keyboard.TapKey(key);
+                            StatusChanged?.Invoke($"Нажата {action.Key}");
+                            break;
+                    }
                 }
+
+                if (infinite)
+                    StatusChanged?.Invoke($"Проход {pass} выполнен");
             }
 
+            _keyboard.ReleaseAll();
             StatusChanged?.Invoke("Сценарий завершён");
         }
         catch (OperationCanceledException)
