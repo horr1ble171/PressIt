@@ -161,8 +161,8 @@ public class ScenarioControl : UserControl
         bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 160));
         bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 160));
         bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
-        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 80));
+        bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 80));
 
         _startBtn = new Button
         {
@@ -187,11 +187,11 @@ public class ScenarioControl : UserControl
         };
         bottomPanel.Controls.Add(_stopBtn, 1, 0);
 
-        var saveBtn = new Button { Text = "Сохр." };
+        var saveBtn = new Button { Text = "Сохр.", Dock = DockStyle.Fill };
         saveBtn.Click += SaveScenario;
         bottomPanel.Controls.Add(saveBtn, 3, 0);
 
-        var loadBtn = new Button { Text = "Загр." };
+        var loadBtn = new Button { Text = "Загр.", Dock = DockStyle.Fill };
         loadBtn.Click += LoadScenario;
         bottomPanel.Controls.Add(loadBtn, 4, 0);
 
