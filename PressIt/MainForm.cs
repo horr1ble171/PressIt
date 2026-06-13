@@ -21,7 +21,7 @@ public partial class MainForm : Form
     {
         Text = "PressIt";
         ClientSize = new Size(600, 500);
-        MinimumSize = new Size(500, 400);
+        MinimumSize = new Size(560, 480);
         FormBorderStyle = FormBorderStyle.Sizable;
         MaximizeBox = true;
         StartPosition = FormStartPosition.CenterScreen;

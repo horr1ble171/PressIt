@@ -33,27 +33,46 @@ public class ScenarioControl : UserControl
 
     private void InitializeControls()
     {
+        var layout = new TableLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            ColumnCount = 1,
+            RowCount = 4,
+            Padding = new Padding(15, 8, 15, 8)
+        };
+        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+
+        var headerPanel = new Panel { Height = 30 };
         var listLabel = new Label
         {
             Text = "Действия:",
-            Location = new Point(15, 10),
+            Location = new Point(0, 5),
             AutoSize = true
         };
+        var logo = new PictureBox
+        {
+            Image = AppResources.Logo,
+            SizeMode = PictureBoxSizeMode.Zoom,
+            Location = new Point(0, 0),
+            Size = new Size(32, 30),
+            Anchor = AnchorStyles.Top | AnchorStyles.Right
+        };
+        headerPanel.Controls.AddRange(new Control[] { listLabel, logo });
 
         _actionListBox = new ListBox
         {
-            Location = new Point(15, 28),
-            Size = new Size(530, 185),
-            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+            Dock = DockStyle.Fill,
             DataSource = _actions
         };
 
         var addGroup = new GroupBox
         {
             Text = "Добавить действие",
-            Location = new Point(15, 225),
-            Size = new Size(530, 110),
-            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
+            Dock = DockStyle.Fill,
+            MinimumSize = new Size(0, 100)
         };
 
         var delayLabel = new Label { Text = "Задержка (мс):", Location = new Point(10, 25), AutoSize = true };
@@ -75,33 +94,33 @@ public class ScenarioControl : UserControl
         _keyCombo.Items.AddRange(new[] { "W", "A", "S", "D", "X", "Space", "Ctrl", "Shift", "Alt", "Enter", "Q", "E", "R", "F", "Z", "C", "V", "Tab", "Esc", "Up", "Down", "Left", "Right", "1", "2", "3", "4", "5", "0" });
         _keyCombo.SelectedIndex = 0;
 
-        _addBtn = new Button { Text = "Добавить", Location = new Point(380, 22), Size = new Size(135, 28), Anchor = AnchorStyles.Top | AnchorStyles.Right };
+        _addBtn = new Button { Text = "Добавить", Location = new Point(380, 22), Size = new Size(135, 28) };
         _addBtn.Click += AddAction;
 
-        _removeBtn = new Button { Text = "Удалить", Location = new Point(380, 55), Size = new Size(135, 28), Anchor = AnchorStyles.Top | AnchorStyles.Right };
+        _removeBtn = new Button { Text = "Удалить", Location = new Point(380, 55), Size = new Size(135, 28) };
         _removeBtn.Click += RemoveAction;
 
         addGroup.Controls.AddRange(new Control[] { delayLabel, _delayUpDown, typeLabel, _actionTypeCombo, keyLabel, _keyCombo, _addBtn, _removeBtn });
 
+        var bottomPanel = new Panel { Height = 60 };
         _startBtn = new Button
         {
             Text = "Запустить",
-            Location = new Point(15, 350),
+            Location = new Point(0, 5),
             Size = new Size(180, 50),
-            Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
             BackColor = Color.LightGreen,
             FlatStyle = FlatStyle.Flat,
             Font = new Font(Font.FontFamily, 12, FontStyle.Bold)
         };
         _startBtn.FlatAppearance.BorderSize = 0;
         _startBtn.Click += StartScenario;
+        bottomPanel.Controls.Add(_startBtn);
 
         _stopBtn = new Button
         {
             Text = "Остановить",
-            Location = new Point(205, 350),
+            Location = new Point(190, 5),
             Size = new Size(180, 50),
-            Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
             BackColor = Color.LightCoral,
             FlatStyle = FlatStyle.Flat,
             Font = new Font(Font.FontFamily, 12, FontStyle.Bold),
@@ -109,23 +128,22 @@ public class ScenarioControl : UserControl
         };
         _stopBtn.FlatAppearance.BorderSize = 0;
         _stopBtn.Click += (_, _) => _runner.Stop();
+        bottomPanel.Controls.Add(_stopBtn);
 
-        var saveBtn = new Button { Text = "Сохр.", Location = new Point(400, 350), Size = new Size(65, 50), Anchor = AnchorStyles.Bottom | AnchorStyles.Right };
+        var saveBtn = new Button { Text = "Сохр.", Location = new Point(385, 5), Size = new Size(65, 50) };
         saveBtn.Click += SaveScenario;
+        bottomPanel.Controls.Add(saveBtn);
 
-        var loadBtn = new Button { Text = "Загр.", Location = new Point(470, 350), Size = new Size(65, 50), Anchor = AnchorStyles.Bottom | AnchorStyles.Right };
+        var loadBtn = new Button { Text = "Загр.", Location = new Point(455, 5), Size = new Size(65, 50) };
         loadBtn.Click += LoadScenario;
+        bottomPanel.Controls.Add(loadBtn);
 
-        var logo = new PictureBox
-        {
-            Image = AppResources.Logo,
-            SizeMode = PictureBoxSizeMode.Zoom,
-            Location = new Point(532, 8),
-            Size = new Size(48, 48),
-            Anchor = AnchorStyles.Top | AnchorStyles.Right
-        };
+        layout.Controls.Add(headerPanel, 0, 0);
+        layout.Controls.Add(_actionListBox, 0, 1);
+        layout.Controls.Add(addGroup, 0, 2);
+        layout.Controls.Add(bottomPanel, 0, 3);
 
-        Controls.AddRange(new Control[] { listLabel, _actionListBox, addGroup, _startBtn, _stopBtn, saveBtn, loadBtn, logo });
+        Controls.Add(layout);
     }
 
     private void AddAction(object? sender, EventArgs e)
