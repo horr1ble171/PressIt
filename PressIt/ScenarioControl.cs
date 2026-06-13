@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Linq;
+using MaterialSkin.Controls;
 using PressIt.Models;
 using PressIt.Services;
 
@@ -45,7 +46,7 @@ public class ScenarioControl : UserControl
             RowCount = 5,
             Padding = new Padding(12, 8, 12, 8)
         };
-        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 36));
         layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 160));
         layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
@@ -56,27 +57,18 @@ public class ScenarioControl : UserControl
             Dock = DockStyle.Fill,
             ColumnCount = 3,
             RowCount = 1,
-            Height = 30
+            Height = 36
         };
         headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
+        headerLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 100));
         headerLayout.Controls.Add(new Label { Text = "Действия:", Anchor = AnchorStyles.Left }, 0, 0);
-        _removeBtn = new Button
+        _removeBtn = new MaterialButton
         {
-            Text = "Удалить", Size = new Size(90, 24), Anchor = AnchorStyles.Right, Enabled = false
+            Text = "Удалить", Size = new Size(100, 30), Enabled = false
         };
         _removeBtn.Click += RemoveAction;
-        var rightPanel = new FlowLayoutPanel
-        {
-            Dock = DockStyle.Fill, FlowDirection = FlowDirection.RightToLeft, WrapContents = false
-        };
-        rightPanel.Controls.Add(new PictureBox
-        {
-            Image = AppResources.Logo, SizeMode = PictureBoxSizeMode.Zoom, Size = new Size(32, 30)
-        });
-        rightPanel.Controls.Add(_removeBtn);
-        headerLayout.Controls.Add(rightPanel, 2, 0);
+        headerLayout.Controls.Add(_removeBtn, 2, 0);
         layout.Controls.Add(headerLayout, 0, 0);
 
         _actionListBox = new ListBox { Dock = DockStyle.Fill, DataSource = _actions, IntegralHeight = false };
@@ -87,7 +79,7 @@ public class ScenarioControl : UserControl
         var addGroup = new GroupBox
         {
             Text = "Новое действие",
-            Height = 90,
+            Height = 105,
             Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
         };
 
@@ -125,18 +117,18 @@ public class ScenarioControl : UserControl
             WrapContents = true
         };
         actionFlow.Controls.Add(new Label { Text = "Тип:", TextAlign = ContentAlignment.MiddleLeft });
-        _actionTypeCombo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 105 };
+        _actionTypeCombo = new MaterialComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 105, AutoResize = false };
         _actionTypeCombo.Items.AddRange(new[] { ScenarioAction.GetActionTypeDisplayName(ActionType.Press), ScenarioAction.GetActionTypeDisplayName(ActionType.Release), ScenarioAction.GetActionTypeDisplayName(ActionType.Tap) });
         _actionTypeCombo.SelectedIndex = 0;
         actionFlow.Controls.Add(_actionTypeCombo);
 
         actionFlow.Controls.Add(new Label { Text = "Клавиша:", TextAlign = ContentAlignment.MiddleLeft });
-        _keyCombo = new ComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 95 };
+        _keyCombo = new MaterialComboBox { DropDownStyle = ComboBoxStyle.DropDownList, Width = 95, AutoResize = false };
         _keyCombo.Items.AddRange(new[] { "W", "A", "S", "D", "X", "Space", "Ctrl", "Shift", "Alt", "Enter", "Q", "E", "R", "F", "Z", "C", "V", "Tab", "Esc", "Up", "Down", "Left", "Right", "1", "2", "3", "4", "5", "0" });
         _keyCombo.SelectedIndex = 0;
         actionFlow.Controls.Add(_keyCombo);
 
-        _addBtn = new Button { Text = "Добавить", Width = 95 };
+        _addBtn = new MaterialButton { Text = "Добавить", Width = 95, Height = 30 };
         _addBtn.Click += AddAction;
         actionFlow.Controls.Add(_addBtn);
 
@@ -144,8 +136,8 @@ public class ScenarioControl : UserControl
         addGroup.Controls.Add(groupInner);
         layout.Controls.Add(addGroup, 0, 2);
 
-        var loopPanel = new FlowLayoutPanel { Dock = DockStyle.Fill, Height = 30 };
-        _loopCheckBox = new CheckBox { Text = "Зациклить", AutoSize = true };
+        var loopPanel = new FlowLayoutPanel { Dock = DockStyle.Fill, Height = 36 };
+        _loopCheckBox = new MaterialCheckbox { Text = "Зациклить", AutoSize = true };
         loopPanel.Controls.Add(_loopCheckBox);
         _loopCountUpDown = new NumericUpDown { Minimum = 0, Maximum = 9999, Width = 60, Value = 1, Enabled = false };
         loopPanel.Controls.Add(_loopCountUpDown);
@@ -155,46 +147,46 @@ public class ScenarioControl : UserControl
 
         var bottomPanel = new TableLayoutPanel
         {
-            Dock = DockStyle.Fill, ColumnCount = 4, RowCount = 1, MinimumSize = new Size(0, 45)
+            Dock = DockStyle.Fill, ColumnCount = 4, RowCount = 1, MinimumSize = new Size(0, 48)
         };
         bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
         bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
         bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 80));
         bottomPanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 80));
 
-        _startBtn = new Button
+        _startBtn = new MaterialButton
         {
-            Text = "Запустить", Dock = DockStyle.Fill, BackColor = Color.LightGreen, FlatStyle = FlatStyle.Flat, MinimumSize = new Size(140, 0)
+            Text = "Запустить [F6]", Dock = DockStyle.Fill, MinimumSize = new Size(140, 0)
         };
-        _startBtn.FlatAppearance.BorderSize = 0;
         _startBtn.Click += StartScenario;
         bottomPanel.Controls.Add(_startBtn, 0, 0);
 
-        _stopBtn = new Button
+        _stopBtn = new MaterialButton
         {
-            Text = "Остановить", Dock = DockStyle.Fill, BackColor = Color.LightCoral, FlatStyle = FlatStyle.Flat, Enabled = false, MinimumSize = new Size(140, 0)
+            Text = "Остановить [F7]", Dock = DockStyle.Fill, Enabled = false, MinimumSize = new Size(140, 0)
         };
-        _stopBtn.FlatAppearance.BorderSize = 0;
         _stopBtn.Click += (_, _) =>
         {
             _runner.Stop();
             _startBtn.Enabled = true;
             _stopBtn.Enabled = false;
-            if (this.FindForm() is MainForm main)
-                main.RestoreForm();
         };
         bottomPanel.Controls.Add(_stopBtn, 1, 0);
 
-        var saveBtn = new Button { Text = "Сохр.", Dock = DockStyle.Fill };
+        var saveBtn = new MaterialButton { Text = "Сохр.", Dock = DockStyle.Fill };
         saveBtn.Click += SaveScenario;
         bottomPanel.Controls.Add(saveBtn, 2, 0);
 
-        var loadBtn = new Button { Text = "Загр.", Dock = DockStyle.Fill };
+        var loadBtn = new MaterialButton { Text = "Загр.", Dock = DockStyle.Fill };
         loadBtn.Click += LoadScenario;
         bottomPanel.Controls.Add(loadBtn, 3, 0);
 
         layout.Controls.Add(bottomPanel, 0, 4);
         Controls.Add(layout);
+
+        var tooltip = new ToolTip();
+        tooltip.SetToolTip(_startBtn, "Глобальная горячая клавиша: F6");
+        tooltip.SetToolTip(_stopBtn, "Глобальная горячая клавиша: F7");
     }
 
     private void AddAction(object? sender, EventArgs e)
@@ -233,15 +225,11 @@ public class ScenarioControl : UserControl
         _startBtn.Enabled = false;
         _stopBtn.Enabled = true;
 
-        var form = this.FindForm()!;
-        form.Hide();
         await Task.Delay(200);
 
         var list = _actions.ToList();
         await _runner.RunAsync(list, loopCount);
 
-        if (this.FindForm() is MainForm main)
-            main.RestoreForm();
         _startBtn.Enabled = true;
         _stopBtn.Enabled = false;
     }
@@ -252,8 +240,6 @@ public class ScenarioControl : UserControl
         _runner.Stop();
         _startBtn.Enabled = true;
         _stopBtn.Enabled = false;
-        if (this.FindForm() is MainForm main)
-            main.RestoreForm();
     }
 
     public void TryStart()
@@ -272,8 +258,6 @@ public class ScenarioControl : UserControl
         _runner.Stop();
         _startBtn.Enabled = true;
         _stopBtn.Enabled = false;
-        if (this.FindForm() is MainForm main)
-            main.RestoreForm();
     }
 
     private void SaveScenario(object? sender, EventArgs e)

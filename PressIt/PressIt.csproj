@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <PackageReference Include="InputSimulator" Version="1.0.4" />
+    <PackageReference Include="MaterialSkin.2" Version="2.3.1" />
   </ItemGroup>
 
   <ItemGroup>

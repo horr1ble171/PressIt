@@ -1,10 +1,12 @@
 using System.Runtime.InteropServices;
+using MaterialSkin;
+using MaterialSkin.Controls;
 using PressIt.Services;
 using WindowsInput.Native;
 
 namespace PressIt;
 
-public partial class MainForm : Form
+public partial class MainForm : MaterialForm
 {
     [DllImport("user32.dll")]
     private static extern short GetAsyncKeyState(int vKey);
@@ -23,6 +25,7 @@ public partial class MainForm : Form
 
     private SimpleHoldControl _simpleHoldControl;
     private ScenarioControl _scenarioControl;
+    private Bitmap _logoBmp;
 
     public MainForm()
     {
@@ -33,13 +36,22 @@ public partial class MainForm : Form
         MaximizeBox = true;
         StartPosition = FormStartPosition.CenterScreen;
 
-        using var logoBmp = new Bitmap(AppResources.Logo, 32, 32);
-        Icon = Icon.FromHandle(logoBmp.GetHicon());
+        _logoBmp = new Bitmap(AppResources.Logo, 32, 32);
+        Icon = Icon.FromHandle(_logoBmp.GetHicon());
+        ShowIcon = true;
 
         _runner = new ScenarioRunner(_keyboard);
         _runner.StatusChanged += msg => BeginInvoke(() => _statusLabel.Text = msg);
 
         InitializeControls();
+
+        var skin = MaterialSkinManager.Instance;
+        skin.AddFormToManage(this);
+        skin.Theme = MaterialSkinManager.Themes.LIGHT;
+        skin.ColorScheme = new ColorScheme(
+            Primary.BlueGrey800, Primary.BlueGrey900,
+            Primary.BlueGrey500, Accent.LightBlue200,
+            TextShade.WHITE);
 
         _hotkeyTimer = new System.Windows.Forms.Timer { Interval = 200 };
         _hotkeyTimer.Tick += PollHotkeys;
@@ -53,8 +65,10 @@ public partial class MainForm : Form
 
         if (f6Down && !_f6WasDown)
         {
-            _tabControl.SelectedTab = _tabScenario;
-            _scenarioControl?.TryStart();
+            if (_tabControl.SelectedTab == _tabScenario)
+                _scenarioControl?.TryStart();
+            else
+                _simpleHoldControl?.TryStart();
         }
 
         if (f7Down && !_f7WasDown)
@@ -128,6 +142,7 @@ public partial class MainForm : Form
     {
         _hotkeyTimer.Stop();
         _keyboard.ReleaseAll();
+        _logoBmp?.Dispose();
         base.OnFormClosing(e);
     }
 }

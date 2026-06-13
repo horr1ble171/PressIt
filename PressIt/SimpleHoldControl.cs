@@ -1,3 +1,4 @@
+using MaterialSkin.Controls;
 using PressIt.Services;
 using WindowsInput.Native;
 
@@ -37,92 +38,86 @@ public class SimpleHoldControl : UserControl
             AutoSize = true
         };
 
-        _keyCombo = new ComboBox
+        _keyCombo = new MaterialComboBox
         {
             Location = new Point(30, 55),
-            Size = new Size(200, 25),
+            Size = new Size(200, 30),
             Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
-            DropDownStyle = ComboBoxStyle.DropDownList
+            DropDownStyle = ComboBoxStyle.DropDownList,
+            AutoResize = false
         };
         _keyCombo.Items.AddRange(new[] { "W", "A", "S", "D", "X", "Space", "Ctrl", "Shift", "Alt", "Enter", "Q", "E", "R", "F", "Z", "C", "V", "Tab", "Esc", "Up", "Down", "Left", "Right", "1", "2", "3", "4", "5", "0" });
         _keyCombo.SelectedIndex = 0;
 
         _durationUpDown = new NumericUpDown
         {
-            Location = new Point(30, 100),
-            Size = new Size(80, 25),
+            Location = new Point(30, 120),
+            Size = new Size(110, 26),
             Minimum = 1,
             Maximum = 9999,
-            Value = 10
+            Value = 10,
+            TextAlign = HorizontalAlignment.Center
         };
 
         var secLabel = new Label
         {
             Text = "секунд",
-            Location = new Point(115, 102),
+            Location = new Point(145, 122),
             AutoSize = true
         };
 
-        _infiniteCheck = new CheckBox
+        _infiniteCheck = new MaterialCheckbox
         {
             Text = "Бесконечно (до Стоп)",
-            Location = new Point(30, 135),
-            Size = new Size(200, 25)
+            Location = new Point(30, 160),
+            Size = new Size(240, 30)
         };
         _infiniteCheck.CheckedChanged += (_, _) => _durationUpDown.Enabled = !_infiniteCheck.Checked;
 
-        _startBtn = new Button
+        _startBtn = new MaterialButton
         {
-            Text = "Старт",
-            Location = new Point(30, 180),
+            Text = "Старт [F6]",
+            Location = new Point(30, 195),
             Size = new Size(220, 55),
-            BackColor = Color.LightGreen,
-            FlatStyle = FlatStyle.Flat,
             Font = new Font(Font.FontFamily, 14, FontStyle.Bold)
         };
-        _startBtn.FlatAppearance.BorderSize = 0;
         _startBtn.Click += StartHold;
 
-        _stopBtn = new Button
+        _stopBtn = new MaterialButton
         {
-            Text = "Стоп",
-            Location = new Point(270, 180),
+            Text = "Стоп [F7]",
+            Location = new Point(270, 195),
             Size = new Size(220, 55),
-            BackColor = Color.LightCoral,
-            FlatStyle = FlatStyle.Flat,
             Font = new Font(Font.FontFamily, 14, FontStyle.Bold),
             Enabled = false
         };
-        _stopBtn.FlatAppearance.BorderSize = 0;
-        _stopBtn.Click += StopHold;
 
         _countdownLabel = new Label
         {
             Text = "",
-            Location = new Point(30, 260),
-            Size = new Size(460, 40),
-            Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right,
+            Location = new Point(30, 280),
             Font = new Font(Font.FontFamily, 18, FontStyle.Bold),
             TextAlign = ContentAlignment.MiddleCenter,
             ForeColor = Color.DarkBlue
         };
 
-        var logo = new PictureBox
-        {
-            Image = AppResources.Logo,
-            SizeMode = PictureBoxSizeMode.Zoom,
-            Location = new Point(532, 25),
-            Size = new Size(48, 48),
-            Anchor = AnchorStyles.Top | AnchorStyles.Right
-        };
+        Controls.AddRange(new Control[] { topLabel, _keyCombo, _durationUpDown, secLabel, _infiniteCheck, _startBtn, _stopBtn, _countdownLabel });
 
-        Controls.AddRange(new Control[] { topLabel, _keyCombo, _durationUpDown, secLabel, _infiniteCheck, _startBtn, _stopBtn, _countdownLabel, logo });
+        var tooltip = new ToolTip();
+        tooltip.SetToolTip(_startBtn, "Глобальная горячая клавиша: F6");
+        tooltip.SetToolTip(_stopBtn, "Глобальная горячая клавиша: F7");
 
         _holdTimer = new System.Windows.Forms.Timer { Interval = 30 };
         _holdTimer.Tick += HoldTick;
 
         _countdownTimer = new System.Windows.Forms.Timer { Interval = 1000 };
         _countdownTimer.Tick += CountdownTick;
+    }
+
+    public void TryStart()
+    {
+        if (_isHolding) return;
+        StartHold(null, EventArgs.Empty);
     }
 
     private void StartHold(object? sender, EventArgs e)
@@ -152,9 +147,6 @@ public class SimpleHoldControl : UserControl
         _stopBtn.Enabled = true;
         _keyCombo.Enabled = false;
 
-        var form = this.FindForm()!;
-        form.Hide();
-
         this.BeginInvoke(() =>
         {
             _keyboard.HoldKey(_selectedKey.Value);
@@ -183,9 +175,6 @@ public class SimpleHoldControl : UserControl
         _keyCombo.Enabled = true;
 
         _updateStatus("Готово");
-
-        if (this.FindForm() is MainForm main)
-            main.RestoreForm();
     }
 
     private void HoldTick(object? sender, EventArgs e)
