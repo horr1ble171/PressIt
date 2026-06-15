@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace PressIt.Models;
 
 public enum ActionType
@@ -30,6 +32,20 @@ public class ScenarioAction
 
     public override string ToString()
     {
-        return $"+{DelayMs}мс [{GetActionTypeDisplayName(ActionType)}] {Key}";
+        var totalMs = DelayMs;
+        var hours = totalMs / 3600000;
+        totalMs %= 3600000;
+        var minutes = totalMs / 60000;
+        totalMs %= 60000;
+        var seconds = totalMs / 1000;
+        var ms = totalMs % 1000;
+
+        var parts = new List<string>();
+        if (hours > 0) parts.Add($"{hours}ч");
+        if (minutes > 0) parts.Add($"{minutes}м");
+        if (seconds > 0) parts.Add($"{seconds}с");
+        if (ms > 0 || parts.Count == 0) parts.Add($"{ms}мс");
+
+        return $"+{string.Join(" ", parts)} [{GetActionTypeDisplayName(ActionType)}] {Key}";
     }
 }
